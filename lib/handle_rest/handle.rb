@@ -5,8 +5,9 @@ class Handle
   attr_reader :handle
   attr_accessor :url
 
-  def initialize(handle)
+  def initialize(handle, url: nil)
     @handle = handle
+    self.url = url
   end
 
   def to_json
