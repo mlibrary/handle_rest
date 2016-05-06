@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
 gemspec
-gem 'pry'
-gem 'rubocop', require: false
+
+group :development do
+  gem 'pry'
+  gem 'rubocop', require: false
+end

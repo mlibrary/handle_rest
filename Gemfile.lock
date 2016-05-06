@@ -51,7 +51,7 @@ PLATFORMS
 DEPENDENCIES
   handle-rest!
   pry
-  rspec
+  rspec (~> 3.4)
   rubocop
 
 BUNDLED WITH
