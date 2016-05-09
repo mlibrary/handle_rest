@@ -1,7 +1,5 @@
 require 'handle_rest/handle'
 
-TEST_URL = 'http://foo.com/bar'.freeze
-
 describe Handle do
   describe '#initialize' do
     it 'can create a handle' do
@@ -37,6 +35,18 @@ describe Handle do
       expect(parsed_json[0]['type']).to eq('URL')
       expect(parsed_json[0]['data']['format']).to eq('string')
       expect(parsed_json[0]['data']['value']).to eq(TEST_URL)
+    end
+  end
+
+  describe '#from_json' do
+    it 'parses handle from json' do
+      json = %( {"responseCode":1,"handle":"9999/test", "values":[{"index":1,
+          "type":"URL","data":{"format":"string","value":"#{TEST_URL}"},
+          "ttl":86400,"timestamp":"2016-05-09T19:19:53Z"}]})
+
+      handle = Handle.from_json(json)
+      expect(handle.id).to eq('9999/test')
+      expect(handle.url).to eq(TEST_URL)
     end
   end
 end

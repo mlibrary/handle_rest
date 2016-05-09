@@ -1,4 +1,5 @@
 require 'json'
+require 'pry'
 
 # wraps the data structures needed to create a handle object
 class Handle
@@ -10,7 +11,11 @@ class Handle
     self.url = url
   end
 
-  def from_json()
+  def self.from_json(json)
+    parsed = JSON.parse(json)
+    Handle.new(parsed['handle'],
+               url: parsed['values']
+                     .find { |v| v['type'] == 'URL' }['data']['value'])
   end
 
   def to_json

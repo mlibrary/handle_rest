@@ -92,3 +92,5 @@ RSpec.configure do |config|
   #   # value as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+TEST_URL = 'http://foo.com/bar'.freeze
