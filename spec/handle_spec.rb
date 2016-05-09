@@ -24,8 +24,8 @@ describe Handle do
 
   describe '#handle' do
     it 'returns the handle the object was initialized with' do
-      handle = Handle.new('myhandle',url: TEST_URL)
-      expect(handle.handle).to eq 'myhandle'
+      handle = Handle.new('myhandle', url: TEST_URL)
+      expect(handle.id).to eq 'myhandle'
     end
   end
 
