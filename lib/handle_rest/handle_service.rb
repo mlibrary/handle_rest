@@ -1,6 +1,4 @@
-
 require 'faraday'
-require 'pry'
 
 # Faraday-backed interface to Handle REST API
 class HandleService

@@ -1,5 +1,4 @@
 require 'json'
-require 'pry'
 
 # wraps the data structures needed to create a handle object
 class Handle
