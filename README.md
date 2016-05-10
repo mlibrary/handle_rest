@@ -10,7 +10,7 @@ documents the REST API.
 
 Add this line to your application's Gemfile:
 
-    gem 'handle-rest'
+    gem 'handle_rest'
 
 And then execute:
 
@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install handle-rest
+    $ gem install handle_rest
 
 ## Usage
 

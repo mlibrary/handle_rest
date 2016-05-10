@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    handle-rest (0.0.0)
+    handle_rest (0.0.0)
       faraday
 
 GEM
@@ -49,7 +49,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  handle-rest!
+  handle_rest!
   pry
   rspec (~> 3.4)
   rubocop

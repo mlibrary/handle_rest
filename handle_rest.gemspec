@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = 'handle-rest'
+  s.name = 'handle_rest'
   s.version = '0.0.0'
   s.date = '2016-05-06'
   s.summary = 'Ruby interface to CNRI Handle REST API'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.authors = ['Aaron Elkiss']
   s.email = 'aelkiss@umich.edu'
   s.files = `git ls-files`.split($OUTPUT_RECORD_SEPARATOR)
-  s.homepage = 'https://github.com/mlibrary/handle-rest'
+  s.homepage = 'https://github.com/mlibrary/handle_rest'
   s.license = 'APACHE2'
   s.add_dependency 'faraday'
   s.required_ruby_version = '>= 2.1'
