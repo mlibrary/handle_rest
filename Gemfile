@@ -5,4 +5,6 @@ gemspec
 group :development do
   gem 'pry'
   gem 'rubocop', require: false
+  gem 'yard'
+  gem 'inch'
 end
