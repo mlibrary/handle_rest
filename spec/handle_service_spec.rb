@@ -42,7 +42,7 @@ describe HandleService do
     expect(returned_handle.id).to eq(handle.id)
     expect(returned_handle.url).to eq(handle.url)
 
-    expect(service.delete(handle)).to be_truthy
+    expect(service.delete(handle.id)).to be_truthy
     expect(service.get(handle.id)).to be_nil
   end
 end
