@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'handle_rest'
-  s.version = '0.0.0'
-  s.date = '2016-05-06'
+  s.version = '0.0.1'
+  s.date = '2016-05-10'
   s.summary = 'Ruby interface to CNRI Handle REST API'
 
   s.description = %( Ruby interface to the CNRI Handle REST API.
