@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'faraday'
 
 # Faraday-backed interface to Handle REST API
@@ -17,7 +19,7 @@ class HandleService
     @conn = Faraday.new(url: url,
                         ssl: { verify: ssl_verify }) do |faraday|
       faraday.request :retry
-      faraday.request :basic_auth, URI.escape(user, /[:%]/), password
+      faraday.request :basic_auth, CGI.escape(user), password
       faraday.adapter Faraday.default_adapter
     end
   end

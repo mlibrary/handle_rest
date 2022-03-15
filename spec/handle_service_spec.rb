@@ -1,22 +1,22 @@
+# frozen_string_literal: true
+
 require 'handle_rest'
 
 PREFIX = '9999/' || ENV['HS_PREFIX']
 
-describe HandleService do
+describe HandleService do # rubocop:disable Metrics/BlockLength
   let(:handle) { Handle.new("#{PREFIX}test", url: TEST_URL) }
   let(:service) do
     verify_ssl = true
     verify_ssl = false if ENV['HS_SSL_VERIFY'] == '0'
-    HandleService.new(url: ENV['HS_REST_URL'] || 'https:/localhost:8000/api/handles/',
-                      user: ENV['HS_USER'] || '300:9999/ADMIN',
-                      password: ENV['HS_SECKEY'] || 'password',
-                      ssl_verify: verify_ssl)
+    described_class.new(url: ENV['HS_REST_URL'] || 'https:/localhost:8000/api/handles/',
+                        user: ENV['HS_USER'] || '300:9999/ADMIN',
+                        password: ENV['HS_SECKEY'] || 'password',
+                        ssl_verify: verify_ssl)
   end
 
-  before(:each) do
-    unless ENV['INTEGRATION']
-      skip 'Integration test env vars not set, see README.md'
-    end
+  before do
+    skip 'Integration test env vars not set, see README.md' unless ENV['INTEGRATION']
   end
 
   describe '#get' do
@@ -33,7 +33,7 @@ describe HandleService do
     end
   end
 
-  it 'can create/get/delete a handle' do
+  it 'can create/get/delete a handle' do # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength
     expect(service.create(handle)).to be_truthy
 
     returned_handle = service.get(handle.id)

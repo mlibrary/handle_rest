@@ -1,2 +1,15 @@
+require:
+  - rubocop-rspec
+
 AllCops:
-  TargetRubyVersion: 2.1
+  NewCops: enable
+  DisplayCopNames: true
+  TargetRubyVersion: 2.7.4
+  Include:
+    - '**/*.rb'
+  Exclude:
+    - 'Gemfile.lock'
+
+Naming/FileName:
+  Exclude:
+    - 'Gemfile'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 # wraps the data structures needed to create a handle object
@@ -32,12 +34,11 @@ class Handle
 
   # Converts a handle to a JSON representation suitable for
   # passing to the handle REST API.
-  def to_json
+  def to_json(*_args)
     [{ 'index' => 1, 'type' => 'URL',
        'data' => {
          'format' => 'string',
          'value' => url
-       }
-    }].to_json
+       } }].to_json
   end
 end
