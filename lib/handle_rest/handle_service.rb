@@ -1,4 +1,4 @@
-require 'faraday'
+require "faraday"
 
 # Faraday-backed interface to Handle REST API
 class HandleService
@@ -15,9 +15,9 @@ class HandleService
   # @return [HandleService] a usable service object
   def initialize(url:, user:, password:, ssl_verify: true)
     @conn = Faraday.new(url: url,
-                        ssl: { verify: ssl_verify }) do |faraday|
+      ssl: {verify: ssl_verify}) do |faraday|
       faraday.request :retry
-      faraday.request :basic_auth, URI.escape(user, /[:%]/), password
+      faraday.request :basic_auth, CGI.escape(user), password
       faraday.adapter Faraday.default_adapter
     end
   end
@@ -35,7 +35,7 @@ class HandleService
       true
     else
       error = JSON.parse(response.body)
-      raise "#{error['responseCode']}: #{error['message']}"
+      raise "#{error["responseCode"]}: #{error["message"]}"
     end
   end
 
@@ -63,7 +63,7 @@ class HandleService
 
   def build_req(handle, req)
     req.url handle.id.to_s
-    req.headers['Content-Type'] = 'application/json'
+    req.headers["Content-Type"] = "application/json"
     req.body = handle.to_json
   end
 end

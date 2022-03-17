@@ -93,4 +93,4 @@ RSpec.configure do |config|
   #   Kernel.srand config.seed
 end
 
-TEST_URL = 'http://foo.com/bar'.freeze
+TEST_URL = "http://foo.com/bar".freeze

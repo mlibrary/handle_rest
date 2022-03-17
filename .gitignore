@@ -1,3 +1,6 @@
 *~
 *.swp
 envvars
+.idea
+.bundle
+!./bundle/config

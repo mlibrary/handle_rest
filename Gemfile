@@ -1,10 +1,8 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
 group :development do
-  gem 'pry'
-  gem 'rubocop', require: false
-  gem 'yard'
-  # gem 'inch'
+  gem "pry"
+  gem "yard"
 end

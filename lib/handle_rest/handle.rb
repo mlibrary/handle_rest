@@ -1,4 +1,4 @@
-require 'json'
+require "json"
 
 # wraps the data structures needed to create a handle object
 class Handle
@@ -25,19 +25,18 @@ class Handle
   # returned by the handle REST API.
   def self.from_json(json)
     parsed = JSON.parse(json)
-    Handle.new(parsed['handle'],
-               url: parsed['values']
-                     .find { |v| v['type'] == 'URL' }['data']['value'])
+    Handle.new(parsed["handle"],
+      url: parsed["values"]
+            .find { |v| v["type"] == "URL" }["data"]["value"])
   end
 
   # Converts a handle to a JSON representation suitable for
   # passing to the handle REST API.
   def to_json
-    [{ 'index' => 1, 'type' => 'URL',
-       'data' => {
-         'format' => 'string',
-         'value' => url
-       }
-    }].to_json
+    [{"index" => 1, "type" => "URL",
+      "data" => {
+        "format" => "string",
+        "value" => url
+      }}].to_json
   end
 end
