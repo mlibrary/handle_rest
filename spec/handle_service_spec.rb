@@ -1,19 +1,19 @@
 require "handle_rest"
 
-PREFIX = "9999/" || ENV["HS_PREFIX"]
+PREFIX = ENV["HS_PREFIX"] || "9999/"
 
-describe HandleService do
+RSpec.describe HandleService do
   let(:handle) { Handle.new("#{PREFIX}test", url: TEST_URL) }
   let(:service) do
     verify_ssl = true
     verify_ssl = false if ENV["HS_SSL_VERIFY"] == "0"
-    HandleService.new(url: ENV["HS_REST_URL"] || "https:/localhost:8000/api/handles/",
+    described_class.new(url: ENV["HS_REST_URL"] || "https:/localhost:8000/api/handles/",
       user: ENV["HS_USER"] || "300:9999/ADMIN",
       password: ENV["HS_SECKEY"] || "password",
       ssl_verify: verify_ssl)
   end
 
-  before(:each) do
+  before do
     unless ENV["INTEGRATION"]
       skip "Integration test env vars not set, see README.md"
     end
@@ -27,22 +27,35 @@ describe HandleService do
   end
 
   describe "#create" do
+    it "returns truthy" do
+      expect(service.create(handle)).to be_truthy
+    end
+
     it "throws an exception when unsuccessful" do
       bad_handle = Handle.new("laksjdf/laksjdf", url: "THIS_IS_NOT_A_URL")
       expect { service.create(bad_handle) }.to raise_exception RuntimeError
     end
   end
 
-  it "can create/get/delete a handle" do
-    expect(service.create(handle)).to be_truthy
+  context "with a handle" do
+    before { service.create(handle) }
 
-    returned_handle = service.get(handle.id)
+    describe "#get" do
+      it "gets the handle" do
+        returned_handle = service.get(handle.id)
+        expect(returned_handle).to eq handle
+      end
+    end
 
-    expect(returned_handle).to be_a(Handle)
-    expect(returned_handle.id).to eq(handle.id)
-    expect(returned_handle.url).to eq(handle.url)
+    describe "#delete" do
+      it "returns truthy" do
+        expect(service.delete(handle.id)).to be_truthy
+      end
 
-    expect(service.delete(handle.id)).to be_truthy
-    expect(service.get(handle.id)).to be_nil
+      it "actually deletes the handle" do
+        service.delete(handle.id)
+        expect(service.get(handle.id)).to be_nil
+      end
+    end
   end
 end

@@ -1,0 +1,19 @@
+---
+# https://evilmartians.com/chronicles/rubocoping-with-legacy-bring-your-ruby-code-up-to-standard
+
+inherit_mode:
+  merge:
+    - Exclude
+
+require:
+  - rubocop-performance
+  - rubocop-rspec
+  - standard/cop/block_single_line_braces
+
+inherit_gem:
+  standard: config/base.yml
+
+inherit_from:
+  - .rubocop_rspec.yml
+  - .rubocop_rake.yml
+  - .rubocop_strict.yml
