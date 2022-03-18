@@ -20,5 +20,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
-  s.add_development_dependency "standard"
+  s.add_development_dependency "standard" # includes rubocop and rubocop-performance
+  s.add_development_dependency "rubocop-rake"
+  s.add_development_dependency "rubocop-rspec"
 end

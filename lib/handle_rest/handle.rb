@@ -39,4 +39,9 @@ class Handle
         "value" => url
       }}].to_json
   end
+
+  def ==(other)
+    id == other.url &&
+      url == other.url
+  end
 end
