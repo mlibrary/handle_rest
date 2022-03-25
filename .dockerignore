@@ -1,0 +1,12 @@
+# ignore everything
+**
+
+# undo ignore for select files and directories
+!Gemfile*
+!*.gemspec
+!bin/console
+!bin/setup
+!lib
+!spec
+!.r*
+!Rakefile

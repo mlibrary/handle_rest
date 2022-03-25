@@ -1,0 +1,6 @@
+# ignore everything
+**
+
+# undo ignore for select files and directories
+!config
+!ihs-server.sh
