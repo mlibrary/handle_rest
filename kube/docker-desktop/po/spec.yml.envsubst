@@ -3,8 +3,6 @@ kind: Pod
 metadata:
   annotations:
     imageregistry: "https://ghcr.io"
-  labels:
-    app: $YML_MY_APP
   name: $YML_MY_NAME
 spec:
   imagePullSecrets:

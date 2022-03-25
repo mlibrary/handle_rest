@@ -50,4 +50,3 @@ spec:
             - name: tcp-8000
               protocol: TCP
               containerPort: 8000
-          command: [ "bin/hdl-server", "/$YML_MY_NAME" ]
