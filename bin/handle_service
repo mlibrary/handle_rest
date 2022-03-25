@@ -1,7 +1,5 @@
-#!/usr/bin/env ruby
-
-require 'optparse'
-require 'ostruct'
+require "optparse"
+require "ostruct"
 require "bundler/setup"
 require "handle_rest"
 
@@ -12,30 +10,30 @@ individuals = false
 institutions = false
 
 options = OpenStruct.new
-option_parser = OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
+option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{$PROGRAM_NAME} -v -p -c -d -s [-b <base>] [-t <token>]"
-  opts.on('-v', '--verbose', 'Verbose') do
+  opts.on("-v", "--verbose", "Verbose") do
     verbose = true
   end
-  opts.on('-p', '--products', 'Products') do
+  opts.on("-p", "--products", "Products") do
     products = true
   end
-  opts.on('-c', '--components', 'Components') do
+  opts.on("-c", "--components", "Components") do
     components = true
   end
-  opts.on('-d', '--individuals', 'Individuals') do
+  opts.on("-d", "--individuals", "Individuals") do
     individuals = true
   end
-  opts.on('-s', '--institutions', 'Institutions') do
+  opts.on("-s", "--institutions", "Institutions") do
     institutions = true
   end
-  opts.on('-b', '--base [url]', 'URL to api') do |url|
+  opts.on("-b", "--base [url]", "URL to api") do |url|
     options.base = url
   end
-  opts.on('-t', '--token [jwt]', 'JWT token') do |jwt|
+  opts.on("-t", "--token [jwt]", "JWT token") do |jwt|
     options.token = jwt
   end
-  opts.on_tail('-h', '--help', 'Print this help message') do
+  opts.on_tail("-h", "--help", "Print this help message") do
     puts opts
     exit 0
   end
@@ -54,7 +52,7 @@ begin
   response["individuals"] = service.individuals if individuals
   response["institutions"] = service.institutions if institutions
   puts response
-rescue StandardError => e
+rescue => e
   warn e.message
 end
 exit!(0)
