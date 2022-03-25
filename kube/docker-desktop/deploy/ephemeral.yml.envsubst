@@ -36,8 +36,8 @@ spec:
               value: ${YML_MY_MARIADB_DATABASE}
             - name: INDEPENDENT_HANDLE_SERVER_PREFIX
               value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
-            - name: INDEPENDENT_HANDLE_SERVER_ADMIN
-              value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_ADMIN}
+            - name: INDEPENDENT_HANDLE_SERVER_SUFFIX
+              value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_SUFFIX}
             - name: INDEPENDENT_HANDLE_SERVER_PASSWORD
               value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PASSWORD}
           ports:

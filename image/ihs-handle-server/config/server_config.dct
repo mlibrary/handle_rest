@@ -36,13 +36,13 @@
     "sql_settings" = {
       "sql_url" = "jdbc:mysql://mysql/ihs?user=USER&password=PASSWORD"
       "sql_driver" = "com.mysql.jdbc.Driver"
-      "sql_login" = "ihs"
-      "sql_password" = "password"
+      "sql_login" = "USER"
+      "sql_password" = "PASSWORD"
       "sql_read_only" = "no"
     }
 
     "server_admins" = (
-      "PREFIX/ADMIN"
+      "PREFIX/SUFFIX"
     )
 
     "replication_admins" = (

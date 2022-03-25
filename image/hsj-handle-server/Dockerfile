@@ -15,6 +15,6 @@ RUN wget http://www.handle.net/hnr-source/hsj-8.1.4.tar.gz -O hsj.tar.gz \
 
 # Install Vim
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
-vim-tiny
+  vim-tiny
 
 WORKDIR /hsj

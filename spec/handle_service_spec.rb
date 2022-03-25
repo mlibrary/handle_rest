@@ -43,7 +43,8 @@ RSpec.describe HandleService do
     describe "#get" do
       it "gets the handle" do
         returned_handle = service.get(handle.id)
-        expect(returned_handle).to eq handle
+        expect(returned_handle.id).to eq handle.id
+        expect(returned_handle.url).to eq handle.url
       end
     end
 
