@@ -1,0 +1,29 @@
+AUTHENTICATE SECKEY:300:TEST/ADMIN
+password
+
+In order to authenticate, a user needs to have a handle identity. A handle identity is either a public
+key or secret key stored on a handle record. This identity is expressed as a string defining the index of
+the value that contains the key separated from the handle by a colon. For example if you had a public
+key stored at index 300 on handle 12345/abc the authentication identity would be "300:12345/abc".
+When you register a prefix a prefix handle is created on the root service and your public key is stored
+on that handle at index 300. As such it is typical for handle users to have a handle identity of the form:
+
+CREATE TEST/BED
+100 HS_ADMIN 86400 1110 ADMIN 100:111111111111:TEST/ADMIN
+3 URL 86400 1110 UTF8 http://localhost:8000/bed
+
+CREATE TEST/BED.ADMIN
+100 HS_ADMIN 86400 1110 ADMIN 100:111111111111:TEST/ADMIN
+3 URL 86400 1110 UTF8 http://localhost:8000/bed/admin
+
+CREATE TEST/BED.EDITOR
+100 HS_ADMIN 86400 1110 ADMIN 100:111111111111:TEST/ADMIN
+3 URL 86400 1110 UTF8 http://localhost:8000/bed/editor
+
+CREATE TEST/BED.AUDITOR
+100 HS_ADMIN 86400 1110 ADMIN 100:111111111111:TEST/ADMIN
+3 URL 86400 1110 UTF8 http://localhost:8000/bed/auditor
+
+CREATE TEST/BED.USER
+100 HS_ADMIN 86400 1110 ADMIN 100:111111111111:TEST/ADMIN
+3 URL 86400 1110 UTF8 http://localhost:8000/bed/user

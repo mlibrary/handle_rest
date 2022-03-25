@@ -1,0 +1,4 @@
+{
+    "trace_resolution" = "yes"
+    "no_udp_resolution" = "yes"
+}

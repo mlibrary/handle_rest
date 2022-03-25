@@ -3,4 +3,9 @@
 envvars
 .idea
 .bundle
-!./bundle/config
+!.bundle/config
+
+/image/ghr/Dockerfile
+/image/ihs/Dockerfile
+
+/kube/docker-desktop/**/*.yml

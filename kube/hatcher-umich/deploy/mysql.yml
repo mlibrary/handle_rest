@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: testbed
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: testbed
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        imageregistry: "https://docker.pkg.github.com"
+      labels:
+        app: testbed
+    spec:
+      containers:
+        - name: mysql
+          image: docker.pkg.github.com/mlibrary/heliotropium/mysql:latest
+          env:
+            # Use secret in real usage
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql
+              mountPath: /var/lib/mysql
+      imagePullSecrets:
+        - name: github-packages-read
+      volumes:
+        - name: mysql
+          persistentVolumeClaim:
+            claimName: mysql

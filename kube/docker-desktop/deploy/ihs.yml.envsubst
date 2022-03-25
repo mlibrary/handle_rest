@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $YML_MY_APP
+  name: $YML_MY_NAME
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $YML_MY_APP
+  template:
+    metadata:
+      annotations:
+        imageregistry: "https://ghcr.io"
+      labels:
+        app: $YML_MY_APP
+    spec:
+      imagePullSecrets:
+        - name: github-packages-read
+      containers:
+        - name: $YML_MY_NAME
+          image: ghcr.io/${GITHUB_USER}/ihs-handle-server:latest
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: ${YML_MY_MARIADB_ROOT_PASSWORD}
+            - name: MARIADB_USER
+              value: ${YML_MY_MARIADB_USER}
+            - name: MARIADB_PASSWORD
+              value: ${YML_MY_MARIADB_PASSWORD}
+            - name: MARIADB_ROOT_HOST
+              value: localhost
+            - name: MARIADB_MYSQL_LOCALHOST_USER
+              value: non_empty_value
+            - name: MARIADB_DATABASE
+              value: ${YML_MY_MARIADB_DATABASE}
+            - name: INDEPENDENT_HANDLE_SERVER_PREFIX
+              value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+            - name: INDEPENDENT_HANDLE_SERVER_ADMIN
+              value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_ADMIN}
+            - name: INDEPENDENT_HANDLE_SERVER_PASSWORD
+              value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PASSWORD}
+          ports:
+            - name: tcp-2641
+              protocol: TCP
+              containerPort: 2641
+            - name: udp-2641
+              protocol: UDP
+              containerPort: 2641
+            - name: tcp-8000
+              protocol: TCP
+              containerPort: 8000
+          command: [ "bin/hdl-server", "/$YML_MY_NAME" ]

@@ -1,4 +1,4 @@
-name: package-image-handle-net-server
+name: package-handle-net-server
 
 on: workflow_dispatch
 

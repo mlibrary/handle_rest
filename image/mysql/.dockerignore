@@ -1,0 +1,7 @@
+# ignore everything
+**
+
+# undo ignore for select files and directories
+!conf.d
+!docker-entrypoint-initdb.d
+
