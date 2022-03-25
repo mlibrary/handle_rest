@@ -1,14 +1,12 @@
-#!/usr/bin/env ruby
-
-require 'optparse'
-require 'ostruct'
+require "optparse"
+require "ostruct"
 require "bundler/setup"
 require "handle_rest"
 
 # options = OpenStruct.new
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{$PROGRAM_NAME} noid"
-  opts.on_tail('-h', '--help', 'Print this help message') do
+  opts.on_tail("-h", "--help", "Print this help message") do
     puts opts
     exit 0
   end
@@ -24,7 +22,7 @@ else
     puts "path: #{Turnsole::Handle::Service.path(noid)}"
     puts "url: #{Turnsole::Handle::Service.url(noid)}"
     puts "value: #{Turnsole::Handle::Service.value(noid)}"
-  rescue StandardError => e
+  rescue => e
     warn e.message
   end
   exit!(0)
