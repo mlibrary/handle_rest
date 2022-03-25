@@ -1,6 +1,6 @@
 ARG RUBY_VERSION=2.7.2
 FROM ruby:${RUBY_VERSION}
-ARG BUNDLER_VERSION=2.1.4
+ARG BUNDLER_VERSION=2.2.25
 ARG UNAME=spec
 ARG UID=1000
 ARG GID=1000
@@ -23,7 +23,7 @@ COPY --chown=${UID}:${GID} Gemfile* *.gemspec /app/
 ENV BUNDLE_PATH /gems
 
 WORKDIR /app
-RUN bundle install
+RUN bundle _${BUNDLER_VERSION}_ install
 
 COPY --chown=${UID}:${GID} . /app
 

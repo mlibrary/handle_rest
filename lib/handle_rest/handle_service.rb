@@ -16,8 +16,9 @@ class HandleService
   def initialize(url:, user:, password:, ssl_verify: true)
     @conn = Faraday.new(url: url,
       ssl: {verify: ssl_verify}) do |faraday|
-      faraday.request :retry
-      faraday.request :basic_auth, CGI.escape(user), password
+      # faraday.request :retry
+      # faraday.request :basic_auth, CGI.escape(user), password
+      faraday.request :authorization, :basic, CGI.escape(user), password
       faraday.adapter Faraday.default_adapter
     end
   end
