@@ -1,6 +1,6 @@
-require "handle_rest/handle"
+require "handle_rest"
 
-describe Handle do
+describe HandleRest::Handle do
   describe "#initialize" do
     it "can create a handle" do
       expect { described_class.new("myhandle") }.not_to raise_exception
