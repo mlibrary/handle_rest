@@ -2,7 +2,7 @@ require "handle_rest"
 
 PREFIX = ENV["HS_PREFIX"] || "9999/"
 
-RSpec.describe HandleService do
+describe HandleRest::HandleService do
   let(:handle) { Handle.new("#{PREFIX}test", url: TEST_URL) }
   let(:service) do
     verify_ssl = true
@@ -44,6 +44,8 @@ RSpec.describe HandleService do
       it "gets the handle" do
         returned_handle = service.get(handle.id)
         expect(returned_handle).to eq handle
+        # expect(returned_handle.id).to eq handle.id
+        # expect(returned_handle.url).to eq handle.url
       end
     end
 
