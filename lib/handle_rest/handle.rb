@@ -1,49 +1,56 @@
 require "json"
 
 module HandleRest
-  # wraps the data structures needed to create a handle object
   class Handle
-    # @return [String] The handle's identifier with prefix, for example
-    # `2027/mdp.390150123456789`
-    attr_reader :id
+    private_class_method :new
 
-    # @return [String] The URL the handle resolves to
-    attr_accessor :url
-
-    # Create a new handle; it is not persisted by default (use
-    # {HandleService#create} for that)
-    #
-    # @param id [String] The handle's identifier with prefix, for example
-    # `2027/mdp.390150123456789`
-    # @param url [String] The URL the handle should resolve to
-    # @return [Handle] a new handle.
-    def initialize(id, url: nil)
-      @id = id
-      self.url = url
+    def initialize(identifier, value_lines, handle_service, factory_handle_service)
+      raise "non-identifier" unless identifier.is_a?(Identifier)
+      raise "non-value line" unless value_lines.all? { |value_line| value_line.is_a?(ValueLine) }
+      raise "no admin value line" unless value_lines.any? { |value_line| value_line.value.is_a?(AdminValue) }
+      raise "non-handle service" unless handle_service.is_a?(HandleService)
+      raise "factory non-handle service" unless factory_handle_service.is_a?(HandleService)
+      @identifier = identifier
+      @value_lines = value_lines
+      @handle_service = handle_service
+      @factory_handle_service = factory_handle_service
     end
 
-    # Initializes a new handle from the JSON representation as
-    # returned by the handle REST API.
-    def self.from_json(json)
-      parsed = JSON.parse(json)
-      Handle.new(parsed["handle"],
-        url: parsed["values"]
-              .find { |v| v["type"] == "URL" }["data"]["value"])
+    def url
+      url_value_lines = @value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
+      return nil if url_value_lines.empty?
+
+      url_value_line = url_value_lines.select { |value_line| value_line.index == 1 }
+      raise "url not found" if url_value_line.nil?
+
+      url_value_lines[0].value.value
     end
 
-    # Converts a handle to a JSON representation suitable for
-    # passing to the handle REST API.
-    def to_json
-      [{"index" => 1, "type" => "URL",
-        "data" => {
-          "format" => "string",
-          "value" => url
-        }}].to_json
-    end
+    def url=(url)
+      url_value_lines = @value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
 
-    def ==(other)
-      id == other.url &&
-        url == other.url
+      if url_value_lines.empty?
+        url_value_line = ValueLine.new(1, UrlValue.new(url))
+        @handle_service.put(@identifier, url_value_line)
+        @value_lines = @factory_handle_service.get(@identifier)
+        url_value_lines = @value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
+        raise "url not found" if url_value_lines.empty?
+      end
+
+      url_value_line = url_value_lines.select { value_line.value.value == url }
+      return if !url_value_line.nil?
+
+      url_value_line = url_value_lines[0]
+      url_value_line.value.value = url
+      @handle_service.put(@identifier, url_value_line)
+      @value_lines = @factory_handle_service.get(@identifier)
+      url_value_lines = @value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
+      raise "url not found" if url_value_lines.empty?
+
+      url_value_line = url_value_lines.select { value_line.value.value == url }
+      return if !url_value_line.nil?
+
+      raise "url not found"
     end
   end
 end

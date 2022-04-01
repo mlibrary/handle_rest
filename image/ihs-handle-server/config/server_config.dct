@@ -42,7 +42,7 @@
     }
 
     "server_admins" = (
-      "PREFIX/SUFFIX"
+      "PREFIX/PREFIX"
     )
 
     "replication_admins" = (

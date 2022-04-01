@@ -2,6 +2,8 @@ require "json"
 
 module HandleRest
   class ValueLine
+    attr_reader :index
+    attr_reader :value
     attr_reader :permission_set
     attr_reader :time_to_live
 
@@ -39,6 +41,38 @@ module HandleRest
       seconds = 86400 if seconds.nil?
       raise "time to live must be an integer greater than or equal to zero" if !seconds.is_a?(Integer) || seconds < 0
       @time_to_live = seconds
+    end
+
+    def ==(other)
+      index == other.index &&
+        value == other.value
+      # permission_set == other.permission_set &&
+      # time_to_live == other.time_to_live
+    end
+
+    def as_json(options = {})
+      {
+        index: @index,
+        type: @value.type,
+        data: @value,
+        ttl: @time_to_live,
+        permissions: permission_set.to_s
+      }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
+    end
+
+    def self.from_h(value)
+      permissions = nil
+      permissions = HandleRest::PermissionSet.from_s(value["permissions"]) unless value["permissions"].nil?
+      new(
+        value["index"].to_i,
+        HandleRest::Value.from_h(value["type"], value["data"]),
+        permission_set: permissions,
+        time_to_live: value["ttl"]
+      )
     end
   end
 end

@@ -1,21 +1,18 @@
-require "json"
-
 module HandleRest
-  # wraps handle identifier
   class Identifier
     private_class_method :new
 
     attr_reader :prefix
     attr_reader :suffix
 
-    # Serialize a handle identifier
+    # Serialize
     #
     # @return [String]
     def to_s
       "#{@prefix}/#{@suffix}"
     end
 
-    # Deserialize a handle identifier
+    # Deserialize
     #
     # @return [Identifier]
     def self.from_s(s)
