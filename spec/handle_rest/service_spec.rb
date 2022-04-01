@@ -4,10 +4,10 @@ require "handle_rest"
 describe HandleRest::Service do
   let(:service) { described_class.new(handle_service_rest_url, naming_authority_identifier, admin_identity, admin_password, root_naming_authority_identifier, root_admin_identity, root_admin_password, ssl_verify) }
   let(:handle_service_rest_url) { "url" }
-  let(:naming_authority_identifier) { HandleRest::Identifier.from_s("0.NA/NAME") }
+  let(:naming_authority_identifier) { HandleRest::Handle.from_s("0.NA/NAME") }
   let(:admin_identity) { HandleRest::Identity.from_s("300:NAME/ADMIN") }
   let(:admin_password) { "password" }
-  let(:root_naming_authority_identifier) { HandleRest::Identifier.from_s("0.NA/NAME") }
+  let(:root_naming_authority_identifier) { HandleRest::Handle.from_s("0.NA/NAME") }
   let(:root_admin_identity) { HandleRest::Identity.from_s("300:NAME/ADMIN") }
   let(:root_admin_password) { "root_password" }
   let(:ssl_verify) { true }
@@ -52,7 +52,7 @@ describe HandleRest::Service do
 
   context "with handle service" do
     let(:handle_service) { instance_double(HandleRest::HandleService, "handle_service") }
-    let(:handle_identifier) { HandleRest::Identifier.from_s("NAME/HANDLE") }
+    let(:handle_identifier) { HandleRest::Handle.from_s("NAME/HANDLE") }
     let(:handle_url) { "URL" }
     let(:value_lines) { [root_admin_value_line, admin_value_line, url_value_line] }
     let(:root_admin_value_line) { HandleRest::ValueLine.new(100, HandleRest::AdminValue.new(root_admin_identity.index, HandleRest::AdminPermissionSet.from_s("111111111111"), root_admin_identity.identifier)) }

@@ -17,7 +17,7 @@ module HandleRest
     # @return [identity]
     def self.from_s(str)
       m = /^\A([^:\s]+):(\S+)\z$/i.match(str.strip)
-      new(m[1].to_i, Identifier.from_s(m[2]))
+      new(m[1].to_i, Handle.from_s(m[2]))
     end
 
     # Equivalence operator

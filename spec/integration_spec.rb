@@ -26,13 +26,16 @@ describe "INTEGRATION" do
   let(:secret_key_value_line) { HandleRest::ValueLine.new(300, HandleRest::SecretKeyValue.new(PASSWORD)) }
 
   before do
-    unless ENV["INTEGRATION"]
+    unless ENV["INTEGRATION"] == 1
       skip "Integration test env vars not set, see README.md"
     end
     root_hs.put(admin.identifier, [root_admin_value_line, admin_value_line, secret_key_value_line])
   end
 
   after do
+    unless ENV["INTEGRATION"] == 1
+      skip "Integration test env vars not set, see README.md"
+    end
     root_hs.index(PREFIX).each do |identifier|
       next if identifier == root_admin.identifier
       root_hs.delete(identifier)
@@ -54,7 +57,7 @@ describe "INTEGRATION" do
   end
 
   context "when url handle" do
-    let(:handle_id) { HandleRest::Identifier.from_s("#{PREFIX}/HANDLE_WITH_URL_VALUE") }
+    let(:handle_id) { HandleRest::Handle.from_s("#{PREFIX}/HANDLE_WITH_URL_VALUE") }
     let(:url_value_line) { HandleRest::ValueLine.new(1, HandleRest::UrlValue.new(handle_url)) }
     let(:handle_url) { "https://www.wolverine.com" }
     let(:new_url_value_line) { HandleRest::ValueLine.new(1, HandleRest::UrlValue.new(new_handle_url)) }

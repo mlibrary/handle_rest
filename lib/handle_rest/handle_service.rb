@@ -31,18 +31,16 @@ module HandleRest
       if response.success?
         response.body["totalCount"].to_i
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
     def index(prefix, page = -1, page_size = -1)
       response = @conn.get("", {prefix: prefix, page: page, pageSize: page_size})
       if response.success?
-        response.body["handles"].map { |h| HandleRest::Identifier.from_s(h) }
+        response.body["handles"].map { |h| HandleRest::Handle.from_s(h) }
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
@@ -56,8 +54,7 @@ module HandleRest
       if response.success?
         response.body["values"].map { |v| HandleRest::ValueLine.from_h(v) }
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
@@ -74,8 +71,7 @@ module HandleRest
       if response.success?
         true
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
@@ -90,12 +86,16 @@ module HandleRest
       if response.success?
         true
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
     private
+
+    def raise_response_error(response)
+      error = response.body
+      raise "#{error["responseCode"]}:#{error["handle"]}: #{response_code_message(error["responseCode"])}"
+    end
 
     def response_code_message(response_code)
       case response_code
@@ -158,7 +158,7 @@ module HandleRest
       when 505
         "Session Duplicate Msg Rejected"
       else
-        "response code message missing"
+        "Response Code Message Missing!"
       end
     end
   end
