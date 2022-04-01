@@ -35,12 +35,12 @@ module HandleRest
         PublicKeyValue.from_h(data["format"], data["value"])
       when "HS_SECKEY"
         SecretKeyValue.from_h(data["format"], data["value"])
+      when "HS_VLIST"
+        ReferenceListValue.from_h(data["format"], data["value"])
       when "EMAIL"
         EmailValue.from_h(data["format"], data["value"])
       when "URL"
         UrlValue.from_h(data["format"], data["value"])
-      when "VLIST"
-        ReferenceListValue.from_h(data["format"], data["value"])
       else
         raise "Value unexpected { type: #{type}, data: #{data} }"
       end

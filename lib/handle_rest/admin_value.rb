@@ -4,12 +4,12 @@ module HandleRest
   class AdminValue < Value
     attr_accessor :index
     attr_accessor :permission_set
-    attr_accessor :identifier
+    attr_accessor :handle
 
-    def initialize(index, permission_set, identifier)
+    def initialize(index, permission_set, handle)
       @index = index
       @permission_set = permission_set
-      @identifier = identifier
+      @handle = handle
     end
 
     def type
@@ -22,14 +22,14 @@ module HandleRest
         value: {
           index: index,
           permissions: permission_set.to_s,
-          handle: identifier.to_s
+          handle: handle.to_s
         }
       }
     end
 
     def self.from_s(str)
       m = /^\A([^:\s]+):([01]{12}):(\S+)\z$/i.match(str.strip)
-      new(m[1].to_i, HandleRest::AdminPermissionSet.from_s(m[2]), HandleRest::Identifier.from_s(m[3]))
+      new(m[1].to_i, HandleRest::AdminPermissionSet.from_s(m[2]), HandleRest::Handle.from_s(m[3]))
     end
 
     def self.from_h(format, value)
@@ -40,7 +40,7 @@ module HandleRest
         new(
           value["index"].to_i,
           HandleRest::AdminPermissionSet.from_s(value["permissions"]),
-          HandleRest::Identifier.from_s(value["handle"])
+          HandleRest::Handle.from_s(value["handle"])
         )
       else
         raise "AdminValue unexpected format #{format}"

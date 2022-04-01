@@ -3,13 +3,13 @@ module HandleRest
     private_class_method :new
 
     attr_reader :index
-    attr_reader :identifier
+    attr_reader :handle
 
     # Serialize
     #
     # @return [String]
     def to_s
-      "#{@index}:#{@identifier}"
+      "#{@index}:#{@handle}"
     end
 
     # Deserialize
@@ -17,14 +17,19 @@ module HandleRest
     # @return [identity]
     def self.from_s(str)
       m = /^\A([^:\s]+):(\S+)\z$/i.match(str.strip)
-      new(m[1].to_i, Identifier.from_s(m[2]))
+      new(m[1].to_i, Handle.from_s(m[2]))
     end
 
     # Equivalence operator
     #
     # @return [Boolean]
     def ==(other)
-      index == other.index && identifier == other.identifier
+      index == other.index && handle == other.handle
+    end
+
+    def <=>(other)
+      index <=> other.index unless (index <=> other.index) == 0
+      handle <=> other.handle
     end
 
     private
@@ -32,9 +37,9 @@ module HandleRest
     # Initialize a new handle identity
     #
     # @return [identity]
-    def initialize(index, identifier)
+    def initialize(index, handle)
       @index = index
-      @identifier = identifier
+      @handle = handle
     end
   end
 end

@@ -8,7 +8,7 @@ describe HandleRest::ReferenceListValue do
     expect(reference_list_value).to be_a_kind_of(HandleRest::Value)
   end
 
-  it "type is VLIST" do
-    expect(reference_list_value.type).to eq "VLIST"
+  it "type is HS_VLIST" do
+    expect(reference_list_value.type).to eq "HS_VLIST"
   end
 end

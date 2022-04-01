@@ -5,9 +5,9 @@ module HandleRest
       root_naming_authority_identifier, root_admin_identity, root_admin_password,
       ssl_verify = true)
       raise "non-url: handle service rest url" unless /^\A.+\z$/i.match?(handle_service_rest_url&.strip)
-      raise "non-identifier: naming authority identifier" unless naming_authority_identifier.is_a?(Identifier)
+      raise "non-handle: naming authority handle" unless naming_authority_identifier.is_a?(Handle)
       raise "non-identity: admin identity" unless admin_identity.is_a?(Identity)
-      raise "non-identifier: root naming authority identifier" unless root_naming_authority_identifier.is_a?(Identifier)
+      raise "non-handle: root naming authority handle" unless root_naming_authority_identifier.is_a?(Handle)
       raise "non-identity: root admin identity" unless root_admin_identity.is_a?(Identity)
       raise "non-boolean: ssl verify" unless [true, false].include?(ssl_verify)
 
@@ -25,19 +25,19 @@ module HandleRest
     end
 
     def get_url(handle_identifier)
-      raise "non-identifier: handle identifier" unless handle_identifier.is_a?(Identifier)
+      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       value_lines = @hs.get(handle_identifier)
       url_value_lines = value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
       url_value_lines[0]&.value&.value
     end
 
     def set_url(handle_identifier, handle_url)
-      raise "non-identifier: handle identifier" unless handle_identifier.is_a?(Identifier)
+      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       raise "non-url: handle url" unless /^\A.+\z$/i.match?(handle_url&.strip)
-      raise "non-identifier: handle identifier" unless handle_identifier.is_a?(Identifier)
+      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       value_lines = [
-        ValueLine.new(100, AdminValue.new(@root_adm.index, AdminPermissionSet.from_s("111111111111"), @root_adm.identifier)),
-        ValueLine.new(101, AdminValue.new(@adm.index, AdminPermissionSet.from_s("110011110001"), @adm.identifier)),
+        ValueLine.new(100, AdminValue.new(@root_adm.index, AdminPermissionSet.from_s("111111111111"), @root_adm.handle)),
+        ValueLine.new(101, AdminValue.new(@adm.index, AdminPermissionSet.from_s("110011110001"), @adm.handle)),
         ValueLine.new(1, UrlValue.new(handle_url.strip))
       ]
       @hs.put(handle_identifier, value_lines)
@@ -45,7 +45,7 @@ module HandleRest
     end
 
     def delete(handle_identifier)
-      raise "non-identifier: handle identifier" unless handle_identifier.is_a?(Identifier)
+      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       @hs.delete(handle_identifier)
       nil
     end

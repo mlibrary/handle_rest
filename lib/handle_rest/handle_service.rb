@@ -31,33 +31,30 @@ module HandleRest
       if response.success?
         response.body["totalCount"].to_i
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
     def index(prefix, page = -1, page_size = -1)
       response = @conn.get("", {prefix: prefix, page: page, pageSize: page_size})
       if response.success?
-        response.body["handles"].map { |h| HandleRest::Identifier.from_s(h) }
+        response.body["handles"].map { |h| HandleRest::Handle.from_s(h) }
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
-    # get handle value lines by id
+    # get handle value lines
     #
-    # @param handle_id [String] The handle's identifier with prefix,
+    # @param handle_id [String] The handle (with prefix),
     #   e.g. `2027/mdp.390150123456789`
     # @return [Handle] The handle, or nil if the handle can't be found.
-    def get(id)
-      response = @conn.get(id.to_s)
+    def get(handle)
+      response = @conn.get(handle.to_s)
       if response.success?
         response.body["values"].map { |v| HandleRest::ValueLine.from_h(v) }
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
@@ -67,35 +64,38 @@ module HandleRest
     # @return [Boolean] true if the handle was created successfully
     # @raise [RuntimeError] if the handle server returns an error. The exception
     # text is the error string from the handle server.
-    def put(id, value_lines, update = false)
-      handle = id.to_s
-      handle += "?index=various" if update
-      response = @conn.put(handle, value_lines)
+    def put(handle, value_lines, update = false)
+      handle_str = handle.to_s
+      handle_str += "?index=various" if update
+      response = @conn.put(handle_str, value_lines)
       if response.success?
         true
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
     # Deletes a handle
     #
-    # @param handle_id [String] The handle's identifier with prefix,
+    # @param handle_id [String] The handle (with prefix),
     #   e.g. `2027/mdp.390150123456789`
     # @return [Boolean] True if the handle was successfully deleted,
     #   or false otherwise
-    def delete(id)
-      response = @conn.delete(id.to_s)
+    def delete(handle)
+      response = @conn.delete(handle.to_s)
       if response.success?
         true
       else
-        error = response.body
-        raise "#{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+        raise_response_error(response)
       end
     end
 
     private
+
+    def raise_response_error(response)
+      error = response.body
+      raise "#{error["handle"]} - #{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+    end
 
     def response_code_message(response_code)
       case response_code
@@ -158,7 +158,7 @@ module HandleRest
       when 505
         "Session Duplicate Msg Rejected"
       else
-        "response code message missing"
+        "Response Code Message Missing!"
       end
     end
   end

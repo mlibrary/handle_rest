@@ -4,10 +4,10 @@ require "handle_rest"
 describe HandleRest::Service do
   let(:service) { described_class.new(handle_service_rest_url, naming_authority_identifier, admin_identity, admin_password, root_naming_authority_identifier, root_admin_identity, root_admin_password, ssl_verify) }
   let(:handle_service_rest_url) { "url" }
-  let(:naming_authority_identifier) { HandleRest::Identifier.from_s("0.NA/NAME") }
+  let(:naming_authority_identifier) { HandleRest::Handle.from_s("0.NA/NAME") }
   let(:admin_identity) { HandleRest::Identity.from_s("300:NAME/ADMIN") }
   let(:admin_password) { "password" }
-  let(:root_naming_authority_identifier) { HandleRest::Identifier.from_s("0.NA/NAME") }
+  let(:root_naming_authority_identifier) { HandleRest::Handle.from_s("0.NA/NAME") }
   let(:root_admin_identity) { HandleRest::Identity.from_s("300:NAME/ADMIN") }
   let(:root_admin_password) { "root_password" }
   let(:ssl_verify) { true }
@@ -19,10 +19,10 @@ describe HandleRest::Service do
       it { expect { service }.to raise_exception(RuntimeError, "non-url: handle service rest url") }
     end
 
-    context "when non-identifier naming authority identifier" do
+    context "when non-handle naming authority handle" do
       let(:naming_authority_identifier) {}
 
-      it { expect { service }.to raise_exception(RuntimeError, "non-identifier: naming authority identifier") }
+      it { expect { service }.to raise_exception(RuntimeError, "non-handle: naming authority handle") }
     end
 
     context "when non-identity admin identity" do
@@ -31,10 +31,10 @@ describe HandleRest::Service do
       it { expect { service }.to raise_exception(RuntimeError, "non-identity: admin identity") }
     end
 
-    context "when non-identifier root naming authority identifier" do
+    context "when non-handle root naming authority handle" do
       let(:root_naming_authority_identifier) {}
 
-      it { expect { service }.to raise_exception(RuntimeError, "non-identifier: root naming authority identifier") }
+      it { expect { service }.to raise_exception(RuntimeError, "non-handle: root naming authority handle") }
     end
 
     context "when non-identity root admin identity" do
@@ -52,11 +52,11 @@ describe HandleRest::Service do
 
   context "with handle service" do
     let(:handle_service) { instance_double(HandleRest::HandleService, "handle_service") }
-    let(:handle_identifier) { HandleRest::Identifier.from_s("NAME/HANDLE") }
+    let(:handle_identifier) { HandleRest::Handle.from_s("NAME/HANDLE") }
     let(:handle_url) { "URL" }
     let(:value_lines) { [root_admin_value_line, admin_value_line, url_value_line] }
-    let(:root_admin_value_line) { HandleRest::ValueLine.new(100, HandleRest::AdminValue.new(root_admin_identity.index, HandleRest::AdminPermissionSet.from_s("111111111111"), root_admin_identity.identifier)) }
-    let(:admin_value_line) { HandleRest::ValueLine.new(101, HandleRest::AdminValue.new(admin_identity.index, HandleRest::AdminPermissionSet.from_s("110011110001"), admin_identity.identifier)) }
+    let(:root_admin_value_line) { HandleRest::ValueLine.new(100, HandleRest::AdminValue.new(root_admin_identity.index, HandleRest::AdminPermissionSet.from_s("111111111111"), root_admin_identity.handle)) }
+    let(:admin_value_line) { HandleRest::ValueLine.new(101, HandleRest::AdminValue.new(admin_identity.index, HandleRest::AdminPermissionSet.from_s("110011110001"), admin_identity.handle)) }
     let(:url_value_line) { HandleRest::ValueLine.new(1, HandleRest::UrlValue.new(handle_url)) }
 
     before do
@@ -68,11 +68,11 @@ describe HandleRest::Service do
         allow(handle_service).to receive(:get).with(handle_identifier).and_return value_lines
       end
 
-      context "when non-identifier handle identifier" do
+      context "when non-handle handle" do
         let(:handle_identifier) {}
 
         it "raises exception" do
-          expect { service.get_url(handle_identifier) }.to raise_exception(RuntimeError, "non-identifier: handle identifier")
+          expect { service.get_url(handle_identifier) }.to raise_exception(RuntimeError, "non-handle: handle")
         end
       end
 
@@ -106,11 +106,11 @@ describe HandleRest::Service do
         allow(handle_service).to receive(:put).with(handle_identifier, value_lines)
       end
 
-      context "when non-identifier handle identifier" do
+      context "when non-handle handle" do
         let(:handle_identifier) {}
 
         it "raises exception" do
-          expect { service.set_url(handle_identifier, handle_url) }.to raise_exception(RuntimeError, "non-identifier: handle identifier")
+          expect { service.set_url(handle_identifier, handle_url) }.to raise_exception(RuntimeError, "non-handle: handle")
         end
       end
 
@@ -137,10 +137,10 @@ describe HandleRest::Service do
         allow(handle_service).to receive(:delete).with(handle_identifier).and_return true
       end
 
-      context "when non-identifier handle identifier" do
+      context "when non-handle handle" do
         let(:handle_identifier) {}
 
-        it { expect { service.delete(handle_identifier) }.to raise_exception(RuntimeError, "non-identifier: handle identifier") }
+        it { expect { service.delete(handle_identifier) }.to raise_exception(RuntimeError, "non-handle: handle") }
       end
 
       it "calls handle service delete on handle" do
