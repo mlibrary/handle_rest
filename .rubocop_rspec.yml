@@ -1,3 +1,6 @@
 ---
 AllCops:
   NewCops: enable
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false

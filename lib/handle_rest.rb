@@ -18,7 +18,10 @@ module HandleRest
   end
 end
 
+require_relative "handle_rest/handle"
+
 require_relative "handle_rest/identifier"
+require_relative "handle_rest/identity"
 require_relative "handle_rest/permission_set"
 require_relative "handle_rest/admin_permission_set"
 
@@ -34,6 +37,4 @@ require_relative "handle_rest/urn_value"
 require_relative "handle_rest/value_line"
 
 require_relative "handle_rest/handle_service"
-require_relative "handle_rest/handle"
-
-require_relative "handle_rest/handler"
+require_relative "handle_rest/service"

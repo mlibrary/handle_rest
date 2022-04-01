@@ -1,76 +1,50 @@
 require "handle_rest"
 
 describe HandleRest::Handle do
+  let(:handle) { described_class.new(identifier, handle_service) }
+  let(:identifier) { HandleRest::Identifier.from_s("PREFIX/SUFFIX") }
+  let(:handle_service) { HandleRest::HandleService.new(url: "", user: "", password: "", ssl_verify: false) }
+
   describe "#initialize" do
-    it "can create a handle" do
-      expect { described_class.new("myhandle") }.not_to raise_exception
+    it "raises exception on non-identifier" do
+      expect { described_class.new(nil, nil) }.to raise_exception(RuntimeError, "non-identifier")
     end
 
-    it "can pass a url" do
-      handle = described_class.new("myhandle", url: TEST_URL)
-      expect(handle.url).to eq(TEST_URL)
+    it "raises exception on non-handle service" do
+      expect { described_class.new(identifier, nil) }.to raise_exception(RuntimeError, "non-handle service")
     end
-  end
 
-  describe "#url" do
-    it "can set and return the set url" do
-      handle = described_class.new("myhandle")
-      handle.url = TEST_URL
-      expect(handle.url).to eq(TEST_URL)
+    it "does NOT raises exception on valid arguments" do
+      expect { described_class.new(identifier, handle_service) }.not_to raise_exception
     end
   end
 
-  describe "#handle" do
-    it "returns the handle the object was initialized with" do
-      handle = described_class.new("myhandle", url: TEST_URL)
-      expect(handle.id).to eq "myhandle"
-    end
-  end
+  describe "#create" do
+    let(:admin_value_line) { HandleRest::ValueLine.new(line_index, line_value) }
+    let(:line_index) { 100 }
+    let(:line_value) { HandleRest::AdminValue.new(admin_index, admin_permission_set, admin_identifier) }
+    let(:admin_index) { 300 }
+    let(:admin_permission_set) { HandleRest::AdminPermissionSet.new }
+    let(:admin_identifier) { HandleRest::Identifier.from_s("PREFIX/ADMIN") }
 
-  describe "#to_json" do
-    let(:array_handle_hash) do
-      [
-        {
-          "index" => 1,
-          "type" => "URL",
-          "data" => {
-            "format" => "string",
-            "value" => TEST_URL
-          }
-        }
-      ]
+    before do
+      allow(handle_service).to receive(:create).with(handle).and_return(true)
     end
 
-    it "converts handle to json" do
-      handle = described_class.new("foo", url: "http://foo.com/bar")
-      parsed_json = JSON.parse(handle.to_json)
-      expect(parsed_json[0]).to eq array_handle_hash[0]
-    end
-  end
-
-  describe "#from_json" do
-    let(:handle_server_response) do
-      {
-        responseCode: 1,
-        handle: "9999/test",
-        values: [
-          {
-            index: 1,
-            type: "URL",
-            data: {
-              format: "string",
-              value: TEST_URL
-            }
-          }
-        ],
-        ttl: 86400,
-        timestamp: "2016-05-09T19:19:53Z"
-      }
+    it "raise exception on non-admin value line" do
+      expect { handle.create(HandleRest::ValueLine.new(1, HandleRest::UrlValue.new("url"))) }.to raise_exception(RuntimeError, "non-admin value line")
     end
 
-    it "parses handle from json" do
-      handle = described_class.from_json(handle_server_response.to_json)
-      expect(handle).eql?(described_class.new("9999/test", url: TEST_URL))
+    it "return true on success" do
+      expect(handle.create(admin_value_line)).to be true
+    end
+
+    context "when failure" do
+      before { allow(handle_service).to receive(:create).with(handle).and_return(false) }
+
+      it "returns false" do
+        expect(handle.create(admin_value_line)).to be false
+      end
     end
   end
 end

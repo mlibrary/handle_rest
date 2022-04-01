@@ -25,20 +25,16 @@ spec:
           value: ${YML_MY_MARIADB_DATABASE}
         - name: INDEPENDENT_HANDLE_SERVER_PREFIX
           value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
-        - name: INDEPENDENT_HANDLE_SERVER_SUFFIX
-          value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_SUFFIX}
-        - name: INDEPENDENT_HANDLE_SERVER_PASSWORD
-          value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PASSWORD}
         - name: INTEGRATION
           value: "1"
         - name: HS_REST_URL
           value: https://${YML_MY_INDEPENDENT_HANDLE_SERVER_DEPLOY}:8000/api/handles
         - name: HS_PREFIX
-          value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}/
+          value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
         - name: HS_USER
-          value: 300:${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}/${YML_MY_INDEPENDENT_HANDLE_SERVER_SUFFIX}
-        - name: HS_SECKEY
-          value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PASSWORD}
+          value: 300:${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}/${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+        - name: HS_PASSWORD
+          value: ${YML_MY_MARIADB_PASSWORD}
         - name: HS_SSL_VERIFY
           value: "0"
       volumeMounts:

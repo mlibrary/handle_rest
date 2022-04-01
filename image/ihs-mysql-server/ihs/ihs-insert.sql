@@ -1,10 +1,10 @@
 INSERT INTO nas SET na = '0.NA/PREFIX';
 
 INSERT INTO handles SET
-    handle = 'PREFIX/SUFFIX',
+    handle = 'PREFIX/PREFIX',
     idx = 100,
     type = 'HS_ADMIN',
-    data = '300:111111111111:PREFIX/SUFFIX',
+    data = '300:111111111111:PREFIX/PREFIX',
     ttl_type = 0,
     ttl = 86400,
     timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP()),
@@ -15,21 +15,7 @@ INSERT INTO handles SET
     pub_write = false;
 
 INSERT INTO handles SET
-    handle = 'PREFIX/SUFFIX',
-    idx = 200,
-    type = 'HS_VLIST',
-    data='',
-    ttl_type = 0,
-    ttl = 86400,
-    timestamp = UNIX_TIMESTAMP(CURRENT_TIMESTAMP()),
-    refs='300:PREFIX/SUFFIX',
-    admin_read = true,
-    admin_write = true,
-    pub_read = true,
-    pub_write = false;
-
-INSERT INTO handles SET
-    handle = 'PREFIX/SUFFIX',
+    handle = 'PREFIX/PREFIX',
     idx = 300,
     type = 'HS_SECKEY',
     data = 'PASSWORD',
