@@ -108,4 +108,19 @@ describe HandleRest::AdminPermissionSet do
       expect(described_class.from_s("111111111110")).to eq described_class.new(list_handles: false)
     end
   end
+
+  describe "#from_s(to_s(from_s(str))", if: false do
+    let(:from_str) { described_class.from_s(str) }
+    let(:to_str) { from_str.to_s }
+    let(:from_to_str) { described_class.from_s(to_str) }
+
+    (0..0b111111111111).each do |n|
+      binary_str = "%0*b" % [12, n]
+      context binary_str.to_s do
+        let(:str) { binary_str }
+
+        it { expect(from_str).to eq from_to_str }
+      end
+    end
+  end
 end

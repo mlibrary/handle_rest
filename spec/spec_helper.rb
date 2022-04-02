@@ -17,6 +17,7 @@
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "bundler/setup"
+require "simplecov"
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -95,5 +96,3 @@ RSpec.configure do |config|
   #   # value as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
-
-TEST_URL = "http://foo.com/bar".freeze

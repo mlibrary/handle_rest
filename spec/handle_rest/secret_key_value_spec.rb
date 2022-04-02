@@ -11,4 +11,12 @@ describe HandleRest::SecretKeyValue do
   it "type is HS_SECKEY" do
     expect(secret_key_value.type).to eq "HS_SECKEY"
   end
+
+  it "#self.from_h returns instance" do
+    expect(described_class.from_h("string", expected_value)).to eq secret_key_value
+  end
+
+  it "#self.from_h raises exception on wrong type" do
+    expect { described_class.from_h("String", expected_value) }.to raise_exception(RuntimeError, "SecretKeyValue unexpected format 'String'")
+  end
 end

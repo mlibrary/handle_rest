@@ -10,10 +10,12 @@ GEM
     ast (2.4.2)
     coderay (1.1.3)
     diff-lcs (1.5.0)
+    docile (1.4.0)
     faraday (2.2.0)
       faraday-net_http (~> 2.0)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (2.0.1)
+    json (2.6.1)
     method_source (1.0.0)
     parallel (1.21.0)
     parser (3.1.1.0)
@@ -58,6 +60,11 @@ GEM
       rubocop (~> 1.19)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
+    simplecov (0.16.1)
+      docile (~> 1.1)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.2)
     standard (1.8.0)
       rubocop (= 1.26.0)
       rubocop-performance (= 1.13.3)
@@ -78,6 +85,7 @@ DEPENDENCIES
   rspec
   rubocop-rake
   rubocop-rspec
+  simplecov
   standard
   yard
 

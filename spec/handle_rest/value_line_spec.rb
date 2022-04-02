@@ -35,23 +35,23 @@ describe HandleRest::ValueLine do
     end
 
     it "default permission set == '1110'" do
-      expect(described_class.new(1, HandleRest::UrlValue.new(nil)).permission_set).to eq HandleRest::PermissionSet.from_s("1110")
+      expect(described_class.new(1, HandleRest::UrlValue.new(nil)).permissions).to eq HandleRest::PermissionSet.from_s("1110")
     end
 
     it "default permission set == '1100' for HS_PUBKEY" do
-      expect(described_class.new(1, HandleRest::PublicKeyValue.new(nil)).permission_set).to eq HandleRest::PermissionSet.from_s("1100")
+      expect(described_class.new(1, HandleRest::PublicKeyValue.new(nil)).permissions).to eq HandleRest::PermissionSet.from_s("1100")
     end
 
     it "default permission set == '1100' for HS_SECKEY" do
-      expect(described_class.new(1, HandleRest::SecretKeyValue.new(nil)).permission_set).to eq HandleRest::PermissionSet.from_s("1100")
+      expect(described_class.new(1, HandleRest::SecretKeyValue.new(nil)).permissions).to eq HandleRest::PermissionSet.from_s("1100")
     end
 
     it "raise exception on non-permission set permission set" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permission_set: HandleRest::AdminPermissionSet.new) }.to raise_exception(RuntimeError, "permission set must be a kind of HandleRest::PermissionSet")
+      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permissions: HandleRest::AdminPermissionSet.new) }.to raise_exception(RuntimeError, "permission set must be a kind of HandleRest::PermissionSet")
     end
 
     it "does NOT raise exception on permission set permission set" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permission_set: HandleRest::PermissionSet.new) }.not_to raise_exception
+      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permissions: HandleRest::PermissionSet.new) }.not_to raise_exception
     end
 
     it "default time to live == 86400" do
@@ -68,6 +68,26 @@ describe HandleRest::ValueLine do
 
     it "does NOT raise exception on zero time to live" do
       expect { described_class.new(1, HandleRest::UrlValue.new(nil), time_to_live: 0) }.not_to raise_exception
+    end
+  end
+
+  describe "methods" do
+    let(:value_line) { described_class.new(index, value, permissions: permissions, time_to_live: ttl) }
+    let(:index) { 1 }
+    let(:value) { HandleRest::UrlValue.new("http://www.umich.edu") }
+    let(:permissions) { HandleRest::PermissionSet.from_s("0011") }
+    let(:ttl) { 1999 }
+
+    it "#as_json returns hash" do
+      expect(value_line.as_json).to eq({index: index, type: value.type, data: value, ttl: ttl, permissions: permissions.to_s})
+    end
+
+    it "#to_json calls #as_json" do
+      expect(value_line.to_json).to eq({index: index, type: value.type, data: value, ttl: ttl, permissions: permissions.to_s}.to_json)
+    end
+
+    it "#self.from_h return instance" do
+      expect(described_class.from_h({"index" => index.to_s, "type" => value.type, "data" => {"format" => "string", "value" => value.value.to_s}, "permissions" => permissions.to_s, "time_to_live" => ttl})).to eq value_line
     end
   end
 end

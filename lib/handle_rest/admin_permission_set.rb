@@ -1,23 +1,47 @@
-require "json"
-
 module HandleRest
-  # wraps admin permission set
+  # Handle Administrator Permission Set
   class AdminPermissionSet
+    # @return [Boolean]
     attr_accessor :add_handle
+    # @return [Boolean]
     attr_accessor :delete_handle
+    # @return [Boolean]
     attr_accessor :add_naming_authority
+    # @return [Boolean]
     attr_accessor :delete_naming_authority
+    # @return [Boolean]
     attr_accessor :modify_values
+    # @return [Boolean]
     attr_accessor :remove_values
+    # @return [Boolean]
     attr_accessor :add_values
+    # @return [Boolean]
     attr_accessor :read_values
+    # @return [Boolean]
     attr_accessor :modify_administrator
+    # @return [Boolean]
     attr_accessor :remove_administrator
+    # @return [Boolean]
     attr_accessor :add_administrator
+    # @return [Boolean]
     attr_accessor :list_handles
 
-    # Initialize a new permission set
+    # Initialize
     #
+    # Default is all permissions
+    #
+    # @param add_handle: [Boolean]
+    # @param delete_handle: [Boolean]
+    # @param add_naming_authority: [Boolean]
+    # @param delete_naming_authority: [Boolean]
+    # @param modify_values: [Boolean]
+    # @param remove_values: [Boolean]
+    # @param add_values: [Boolean]
+    # @param read_values: [Boolean]
+    # @param modify_administrator: [Boolean]
+    # @param remove_administrator: [Boolean]
+    # @param add_administrator: [Boolean]
+    # @param list_handles: [Boolean]
     # @return [AdminPermissionSet]
     def initialize(
       add_handle: true,
@@ -47,7 +71,12 @@ module HandleRest
       @list_handles = list_handles
     end
 
-    # Serialize a permission set
+    # Serialize
+    #
+    # Twelve character string { '0' | '1' } with the following order:
+    # add handle, delete handle, add naming authority, delete naming authority,
+    # modify values, remove values, add values, read values,
+    # modify administrator, remove administrator, add administrator, list handles.
     #
     # @return [String]
     def to_s
@@ -67,10 +96,17 @@ module HandleRest
       rv
     end
 
-    # Deserialize a permission set
+    # Deserialize
     #
+    # Twelve character string { '0' | '1' } with the following order:
+    # add handle, delete handle, add naming authority, delete naming authority,
+    # modify values, remove values, add values, read values,
+    # modify administrator, remove administrator, add administrator, list handles.
+    #
+    # @param str [String] permissions e.g. "110011110001"
     # @return [AdminPermissionSet]
-    def self.from_s(s)
+    def self.from_s(str)
+      s = str.dup
       rv = new
       rv.add_handle = HandleRest.character_to_boolean(s.slice!(0))
       rv.delete_handle = HandleRest.character_to_boolean(s.slice!(0))
@@ -87,8 +123,9 @@ module HandleRest
       rv
     end
 
-    # Equivalence operator
+    # Equivalence
     #
+    # @param other [AdminPermissionSet]
     # @return [Boolean]
     def ==(other)
       add_handle == other.add_handle &&
