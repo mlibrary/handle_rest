@@ -4,6 +4,9 @@ envvars
 .idea
 .bundle
 !.bundle/config
+.yardoc
+coverage
+doc
 
 /image/ghr/Dockerfile
 /image/ihs/Dockerfile

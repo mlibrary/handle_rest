@@ -11,4 +11,12 @@ describe HandleRest::UrnValue do
   it "type is URN" do
     expect(urn_value.type).to eq "URN"
   end
+
+  it "#self.from_h returns instance" do
+    expect(described_class.from_h("string", expected_value)).to eq urn_value
+  end
+
+  it "#self.from_h raises exception on wrong type" do
+    expect { described_class.from_h("String", expected_value) }.to raise_exception(RuntimeError, "UrnValue unexpected format 'String'")
+  end
 end

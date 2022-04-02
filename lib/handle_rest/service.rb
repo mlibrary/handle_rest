@@ -1,5 +1,9 @@
 module HandleRest
+  # Handle Service
   class Service
+    # Initialize
+    #
+    # @return [Service]
     def initialize(handle_service_rest_url,
       naming_authority_identifier, admin_identity, admin_password,
       root_naming_authority_identifier, root_admin_identity, root_admin_password,
@@ -24,6 +28,9 @@ module HandleRest
       @root_hs = HandleService.new(url: @url, user: @root_adm, password: @root_pw, ssl_verify: @ssl_verify)
     end
 
+    # Get
+    #
+    # @return
     def get_url(handle_identifier)
       raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       value_lines = @hs.get(handle_identifier)
@@ -31,6 +38,9 @@ module HandleRest
       url_value_lines[0]&.value&.value
     end
 
+    # Set
+    #
+    # @return
     def set_url(handle_identifier, handle_url)
       raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       raise "non-url: handle url" unless /^\A.+\z$/i.match?(handle_url&.strip)
@@ -44,6 +54,9 @@ module HandleRest
       handle_url.strip
     end
 
+    # Delete
+    #
+    # @return
     def delete(handle_identifier)
       raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
       @hs.delete(handle_identifier)

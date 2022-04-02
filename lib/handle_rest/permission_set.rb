@@ -1,15 +1,21 @@
-require "json"
-
 module HandleRest
-  # wraps permission set
+  # Handle Permission Set
   class PermissionSet
+    # @return [Boolean]
     attr_accessor :admin_read
+    # @return [Boolean]
     attr_accessor :admin_write
+    # @return [Boolean]
     attr_accessor :public_read
+    # @return [Boolean]
     attr_accessor :public_write
 
-    # Initialize a new permission set
+    # Initialize
     #
+    # @param admin_read: [Boolean]
+    # @param admin_write: [Boolean]
+    # @param public_read: [Boolean]
+    # @param public_write: [Boolean]
     # @return [PermissionSet]
     def initialize(
       admin_read: true,
@@ -23,7 +29,10 @@ module HandleRest
       @public_write = public_write
     end
 
-    # Serialize a permission set
+    # Serialize
+    #
+    # Twelve character string { '0' | '1' } with the following order:
+    #   admin read, admin write, public read, public write
     #
     # @return [String]
     def to_s
@@ -35,10 +44,15 @@ module HandleRest
       rv
     end
 
-    # Deserialize a permission set
+    # Deserialize
     #
+    # Twelve character string { '0' | '1' } with the following order:
+    #   admin read, admin write, public read, public write
+    #
+    # @param str [String] permissions e.g. "1110"
     # @return [PermissionSet]
-    def self.from_s(s)
+    def self.from_s(str)
+      s = str.dup
       rv = new
       rv.admin_read = HandleRest.character_to_boolean(s.slice!(0))
       rv.admin_write = HandleRest.character_to_boolean(s.slice!(0))
@@ -47,8 +61,9 @@ module HandleRest
       rv
     end
 
-    # Equivalence operator
+    # Equivalence
     #
+    # @param other [PermissionSet]
     # @return [Boolean]
     def ==(other)
       admin_read == other.admin_read &&

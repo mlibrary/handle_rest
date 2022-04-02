@@ -26,6 +26,11 @@ module HandleRest
       end
     end
 
+    # Handle Count
+    #
+    # @param prefix [String]
+    # @return [Integer]
+    # @raise [RuntimeError] if the handle server returns an error.
     def count(prefix)
       response = @conn.get("", {prefix: prefix, page: 0, pageSize: 0})
       if response.success?
@@ -35,6 +40,13 @@ module HandleRest
       end
     end
 
+    # Handle Index
+    #
+    # @param prefix [String] handle prefix
+    # @param page [Integer] pagination page number
+    # @param page_size [Integer] pagination page size
+    # @return [[Handle]]
+    # @raise [RuntimeError] if the handle server returns an error.
     def index(prefix, page = -1, page_size = -1)
       response = @conn.get("", {prefix: prefix, page: page, pageSize: page_size})
       if response.success?
@@ -44,11 +56,11 @@ module HandleRest
       end
     end
 
-    # get handle value lines
+    # Get Handle Value Lines
     #
-    # @param handle_id [String] The handle (with prefix),
-    #   e.g. `2027/mdp.390150123456789`
-    # @return [Handle] The handle, or nil if the handle can't be found.
+    # @param handle [Handle]
+    # @return [[ValueLine]] empty if the handle can't be found.
+    # @raise [RuntimeError] if the handle server returns an error.
     def get(handle)
       response = @conn.get(handle.to_s)
       if response.success?
@@ -58,12 +70,13 @@ module HandleRest
       end
     end
 
-    #
+    # Put Handle Value Lines
     #
     # @param handle [Handle] The handle to create
-    # @return [Boolean] true if the handle was created successfully
-    # @raise [RuntimeError] if the handle server returns an error. The exception
-    # text is the error string from the handle server.
+    # @param value_lines [[ValueLine]]
+    # @param update [Boolean]
+    # @return [Boolean] true
+    # @raise [RuntimeError] if the handle server returns an error.
     def put(handle, value_lines, update = false)
       handle_str = handle.to_s
       handle_str += "?index=various" if update
@@ -77,10 +90,9 @@ module HandleRest
 
     # Deletes a handle
     #
-    # @param handle_id [String] The handle (with prefix),
-    #   e.g. `2027/mdp.390150123456789`
-    # @return [Boolean] True if the handle was successfully deleted,
-    #   or false otherwise
+    # @param handle [Handle]
+    # @return [Boolean] true
+    # @raise [RuntimeError] if the handle server returns an error.
     def delete(handle)
       response = @conn.delete(handle.to_s)
       if response.success?
@@ -92,11 +104,18 @@ module HandleRest
 
     private
 
+    # Raise Response Error
+    #
+    # @param response [Faraday::Response]
     def raise_response_error(response)
       error = response.body
       raise "#{error["handle"]} - #{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
     end
 
+    # Response Code Message Map
+    #
+    # @param response_code [Integer]
+    # @return [String] message
     def response_code_message(response_code)
       case response_code
       when 1

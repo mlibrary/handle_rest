@@ -11,4 +11,12 @@ describe HandleRest::UrlValue do
   it "type is URL" do
     expect(url_value.type).to eq "URL"
   end
+
+  it "#self.from_h returns instance" do
+    expect(described_class.from_h("string", expected_value)).to eq url_value
+  end
+
+  it "#self.from_h raises exception on wrong type" do
+    expect { described_class.from_h("String", expected_value) }.to raise_exception(RuntimeError, "UrlValue unexpected format 'String'")
+  end
 end

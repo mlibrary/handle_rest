@@ -1,19 +1,34 @@
+# Handle Rest Module
 module HandleRest
+  # Serialize
+  #
+  # @param boolean [Boolean]
+  # @return [String] "1" if true or "0" if false
+  # @raise [RuntimeError] if boolean not true or false.
   def self.boolean_to_character(boolean)
-    if boolean
+    case boolean
+    when true
       "1"
-    else
+    when false
       "0"
+    else
+      raise("'#{boolean}' to character must be true or false.")
     end
   end
 
+  # Deserialize
+  #
+  # @param character [String]
+  # @return [Boolean] true if "1" or false if "0"
+  # @raise [RuntimeError] if character not "1" or "0".
   def self.character_to_boolean(character)
-    if character == "1"
+    case character
+    when "1"
       true
-    elsif character == "0"
+    when "0"
       false
     else
-      raise("Must be zero or one.")
+      raise("'#{character}' to boolean must be '1' or '0'.")
     end
   end
 end

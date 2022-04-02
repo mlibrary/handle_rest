@@ -3,7 +3,8 @@ require "handle_rest"
 describe HandleRest::HandleService do
   let(:service) { described_class.new(url: "url", user: "user", password: "password", ssl_verify: false) }
   let(:conn) { instance_double(Faraday::Connection, "conn") }
-  let(:response) { instance_double(Faraday::Response, "response", success?: true, body: response_body) }
+  let(:response) { instance_double(Faraday::Response, "response", success?: success, body: response_body) }
+  let(:success) { true }
   let(:response_body) { {} }
   let(:handle) { HandleRest::Handle.from_s("PREFIX/HANDLE") }
   let(:value_lines) { [] }
@@ -19,6 +20,15 @@ describe HandleRest::HandleService do
     it "returns an empty array" do
       expect(service.count("PREFIX")).to eq 0
     end
+
+    context "when response error" do
+      let(:success) { false }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+
+      it "raise exception" do
+        expect { service.count("PREFIX") }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
+    end
   end
 
   describe "#index" do
@@ -30,6 +40,15 @@ describe HandleRest::HandleService do
     it "returns an empty array" do
       expect(service.index("PREFIX")).to be_empty
     end
+
+    context "when response error" do
+      let(:success) { false }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+
+      it "raise exception" do
+        expect { service.index("PREFIX") }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
+    end
   end
 
   describe "#get" do
@@ -40,6 +59,15 @@ describe HandleRest::HandleService do
     it "returns an empty array" do
       expect(service.get(handle)).to be_empty
     end
+
+    context "when response error" do
+      let(:success) { false }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+
+      it "raise exception" do
+        expect { service.get(handle) }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
+    end
   end
 
   describe "#put" do
@@ -48,6 +76,15 @@ describe HandleRest::HandleService do
     it "returns true" do
       expect(service.put(handle, value_lines)).to be true
     end
+
+    context "when response error" do
+      let(:success) { false }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+
+      it "raise exception" do
+        expect { service.put(handle, value_lines) }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
+    end
   end
 
   describe "#delete" do
@@ -55,6 +92,15 @@ describe HandleRest::HandleService do
 
     it "returns true" do
       expect(service.delete(handle)).to be true
+    end
+
+    context "when response error" do
+      let(:success) { false }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+
+      it "raise exception" do
+        expect { service.delete(handle) }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
     end
   end
 
