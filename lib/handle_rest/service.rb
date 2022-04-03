@@ -3,64 +3,115 @@ module HandleRest
   class Service
     # Initialize
     #
+    # @param value_lines [Array<ValueLine>] default value lines for new handles
+    # @param handle_service [HandleService]
     # @return [Service]
-    def initialize(handle_service_rest_url,
-      naming_authority_identifier, admin_identity, admin_password,
-      root_naming_authority_identifier, root_admin_identity, root_admin_password,
-      ssl_verify = true)
-      raise "non-url: handle service rest url" unless /^\A.+\z$/i.match?(handle_service_rest_url&.strip)
-      raise "non-handle: naming authority handle" unless naming_authority_identifier.is_a?(Handle)
-      raise "non-identity: admin identity" unless admin_identity.is_a?(Identity)
-      raise "non-handle: root naming authority handle" unless root_naming_authority_identifier.is_a?(Handle)
-      raise "non-identity: root admin identity" unless root_admin_identity.is_a?(Identity)
-      raise "non-boolean: ssl verify" unless [true, false].include?(ssl_verify)
-
-      @url = handle_service_rest_url.strip
-      @na = naming_authority_identifier
-      @adm = admin_identity
-      @pw = admin_password
-      @root_na = root_naming_authority_identifier
-      @root_adm = root_admin_identity
-      @root_pw = root_admin_password
-      @ssl_verify = ssl_verify
-
-      @hs = HandleService.new(url: @url, user: @adm, password: @pw, ssl_verify: @ssl_verify)
-      @root_hs = HandleService.new(url: @url, user: @root_adm, password: @root_pw, ssl_verify: @ssl_verify)
+    # @raise [RuntimeError]
+    def initialize(value_lines, handle_service)
+      raise "Parameter 'value_lines' must be an Array<ValueLine> with at least one AdminValue." unless hasAdminValueLine?(value_lines)
+      raise "Parameter 'handle_service' must be an instance of HandleService." unless handle_service&.is_a?(HandleService)
+      @default_value_lines = value_lines
+      @handle_service = handle_service
     end
 
     # Get
     #
-    # @return
-    def get_url(handle_identifier)
-      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
-      value_lines = @hs.get(handle_identifier)
-      url_value_lines = value_lines.select { |value_line| value_line.value.is_a?(UrlValue) }
-      url_value_lines[0]&.value&.value
+    # @param handle [Handle]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def get(handle)
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      @handle_service.get(handle)
+    end
+
+    # Create
+    #
+    # @param handle [Handle]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def create(handle)
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      value_lines = get(handle)
+      return value_lines unless value_lines.empty?
+
+      @handle_service.set(handle, @default_value_lines)
+      get(handle)
     end
 
     # Set
     #
-    # @return
-    def set_url(handle_identifier, handle_url)
-      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
-      raise "non-url: handle url" unless /^\A.+\z$/i.match?(handle_url&.strip)
-      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
-      value_lines = [
-        ValueLine.new(100, AdminValue.new(@root_adm.index, AdminPermissionSet.from_s("111111111111"), @root_adm.handle)),
-        ValueLine.new(101, AdminValue.new(@adm.index, AdminPermissionSet.from_s("110011110001"), @adm.handle)),
-        ValueLine.new(1, UrlValue.new(handle_url.strip))
-      ]
-      @hs.put(handle_identifier, value_lines)
-      handle_url.strip
+    # @param handle [Handle]
+    # @param value_lines [Array<ValueLine>]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def set(handle, value_lines)
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      raise "Parameter 'value_lines' must be an Array<ValueLine>." unless arrayValueLines?(value_lines)
+      return get(handle) if value_lines.empty?
+
+      create(handle)
+      @handle_service.set(handle, value_lines, add_replace: true)
+      get(handle)
     end
 
     # Delete
     #
-    # @return
-    def delete(handle_identifier)
-      raise "non-handle: handle" unless handle_identifier.is_a?(Handle)
-      @hs.delete(handle_identifier)
-      nil
+    # @param handle [Handle]
+    # @param indices [Array<Integer>]
+    # @param value_lines [Array<ValueLine>]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def delete(handle, indices: [], value_lines: [])
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      raise "Parameter 'indices' must be an Array<Integer> where index > 0." unless arrayIndices?(indices)
+      raise "Parameter 'value_lines' must be an Array<ValueLine>." unless arrayValueLines?(value_lines)
+      handle_value_lines = get(handle)
+      return [] if handle_value_lines.empty?
+
+      remove_indices = (indices + value_lines.map(&:index)).uniq
+      return @handle_service.delete(handle) if remove_indices.empty?
+
+      remove_value_lines = []
+      remaining_value_lines = []
+      handle_value_lines.each do |value_line|
+        if remove_indices.include?(value_line.index)
+          remove_value_lines << value_line
+        else
+          remaining_value_lines << value_line
+        end
+      end
+      return remaining_value_lines if remove_value_lines.empty?
+
+      if hasAdminValueLine?(remaining_value_lines)
+        @handle_service.delete(handle, remove_value_lines.map(&:index))
+      else
+        @handle_service.delete(handle)
+      end
+    end
+
+    private
+
+    def arrayIndices?(indices)
+      indices.all? { |index| index.is_a?(Integer) && index > 0 }
+    rescue
+      false
+    end
+
+    def arrayValueLines?(value_lines)
+      value_lines.all? { |value_line| value_line.is_a?(ValueLine) }
+    rescue
+      false
+    end
+
+    def hasAdminValueLine?(value_lines)
+      admin_value_line_count = 0
+      value_lines.each do |value_line|
+        return false unless value_line.is_a?(ValueLine)
+        admin_value_line_count += 1 if value_line.value.is_a?(AdminValue)
+      end
+      admin_value_line_count > 0
+    rescue
+      false
     end
   end
 end

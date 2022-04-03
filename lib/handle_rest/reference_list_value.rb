@@ -29,7 +29,7 @@ module HandleRest
     # Serialize to hash
     #
     # @param options [Hash]
-    # @return [[Hash]] [{index: [Integer], handle: [String]}]
+    # @return [Array<{ index: [Integer], handle: [String] }>]
     def as_json(options = {})
       {
         format: "vlist",
@@ -40,7 +40,7 @@ module HandleRest
     # Deserialize from hash (see #as_json)
     #
     # @param format [String] "vlist"
-    # @param value [[Hash]] [{index: [Integer], handle: [String]}]
+    # @param value [Array<{ index: [Integer], handle: [String] }>]
     # @return [ReferenceListValue]
     # @raise [RuntimeError] if format != 'vlist'.
     def self.from_h(format, value)
