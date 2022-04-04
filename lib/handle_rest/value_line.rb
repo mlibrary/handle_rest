@@ -109,5 +109,10 @@ module HandleRest
         time_to_live: value["ttl"]
       )
     end
+
+    # @return [NilValueLine]
+    def self.nil
+      NilValueLine.new
+    end
   end
 end

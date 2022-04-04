@@ -1,7 +1,13 @@
 module HandleRest
-  # Handle Service
+  # Service
+  #
+  # A simple serive to get, create, set, and delete a handle's value lines.
   class Service
-    # Initialize
+    # Initialize the Service
+    #
+    #   raise RuntimeError if 'value_lines' does NOT have at least one AdminValueLine, otherwise
+    #     raise RuntimeError if 'handle_service' is not an instance of HandleService, otherwise
+    #       return service
     #
     # @param value_lines [Array<ValueLine>] default value lines for new handles
     # @param handle_service [HandleService]
@@ -14,7 +20,7 @@ module HandleRest
       @handle_service = handle_service
     end
 
-    # Get
+    # Get a Handle's Value Lines
     #
     # @param handle [Handle]
     # @return [Array<ValueLine>]
@@ -24,7 +30,7 @@ module HandleRest
       @handle_service.get(handle)
     end
 
-    # Create
+    # Create a new Handle with default value lines
     #
     # @param handle [Handle]
     # @return [Array<ValueLine>]
@@ -38,7 +44,7 @@ module HandleRest
       get(handle)
     end
 
-    # Set
+    # Set a Handle's value lines OR a subset of its value lines
     #
     # @param handle [Handle]
     # @param value_lines [Array<ValueLine>]
@@ -54,7 +60,7 @@ module HandleRest
       get(handle)
     end
 
-    # Delete
+    # Delete a Handle OR remove a subset of its value lines
     #
     # @param handle [Handle]
     # @param indices [Array<Integer>]
@@ -87,6 +93,11 @@ module HandleRest
       else
         @handle_service.delete(handle)
       end
+    end
+
+    # @return [NilService]
+    def self.nil
+      NilService.new
     end
 
     private

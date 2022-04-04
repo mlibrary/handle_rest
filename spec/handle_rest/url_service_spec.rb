@@ -1,56 +1,165 @@
 require "handle_rest"
 
 describe HandleRest::UrlService do
-  subject(:url_service) { described_class.new(handle_service) }
+  subject(:url_service) { described_class.new(service_index, service) }
 
-  let(:handle_service) { instance_double(HandleRest::HandleService, "handle_service") }
-  let(:valid_handle_service) { true }
+  let(:service_index) { 1 }
+  let(:service) { instance_double(HandleRest::Service, "service") }
+  let(:is_a_service) { true }
   let(:handle) { "prefix/suffix" }
-  let(:url) { "https://www.umich.edu" }
-  let(:new_handle) { "suffix/prefix" }
-  let(:new_url) { "https://www.wolverine.net" }
+  let(:value_lines) { [admin_value_line, url_value_line] }
+  let(:admin_value_line) { HandleRest::ValueLine.new(admin_index, admin_value) }
+  let(:admin_index) { service_index + 1 }
+  let(:admin_value) { HandleRest::AdminValue.new(admin_index, HandleRest::AdminPermissionSet.from_s("000000000000"), HandleRest::Handle.from_s("prefix/admin")) }
+  let(:url_value_line) { HandleRest::ValueLine.new(url_index, url_value) }
+  let(:url_index) { service_index }
+  let(:url_value) { HandleRest::UrlValue.from_s(url) }
+  let(:url) { "https://www.urlservice.com" }
+  let(:new_value_lines) { [admin_value_line, new_url_value_line] }
+  let(:new_url_value_line) { HandleRest::ValueLine.new(url_index, new_url_value) }
+  let(:new_url_value) { HandleRest::UrlValue.from_s(new_url) }
+  let(:new_url) { url.sub("com", "net") }
+  let(:corrupted_url) { new_url.sub("www", "corrupted") }
 
   before do
-    allow(handle_service).to receive(:is_a?).with(HandleRest::HandleService).and_return valid_handle_service
+    allow(service).to receive(:is_a?).with(HandleRest::Service).and_return is_a_service
+    allow(service).to receive(:get).with(HandleRest::Handle.from_s(handle)).and_return value_lines
+    allow(service).to receive(:set).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_return new_value_lines
   end
 
   describe "#initialize" do
+    # return url_service
     it { expect { url_service }.not_to raise_exception }
 
-    context "when not a HandleService" do
-      let(:valid_handle_service) { false }
+    # raise RuntimeError if 'index' is not an Integer greater than zero, otherwise
+    context "when service index < 1" do
+      let(:service_index) { 0 }
+      let(:value_lines) { [] } # To keep the before allow service get from raising an exception
+      let(:new_value_lines) { [] } # To keep the before allow service get from raising an exception
 
-      it { expect { url_service }.to raise_exception(RuntimeError, "not and instance of HandleService") }
+      it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'index' is not an Integer greater than zero.") }
+    end
+
+    # raise RuntimeError if 'service' is not an instance of Service, otherwise
+    context "when not a HandleService" do
+      let(:is_a_service) { false }
+
+      it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'service' is not an instance of Service.") }
     end
   end
 
   describe "#get" do
-    let(:value_lines) { [value_line] }
-    let(:value_line) { HandleRest::ValueLine.new(index, value) }
-    let(:index) { 1 }
-    let(:value) { HandleRest::UrlValue.from_s(url) }
+    subject(:url_service_get) { url_service.get(handle) }
 
-    before do
-      allow(handle_service).to receive(:get).with(HandleRest::Handle.from_s(handle)).and_return value_lines
-      allow(handle_service).to receive(:get).with(HandleRest::Handle.from_s(new_handle)).and_return []
+    # return 'url' of 'index' value line.
+    it { expect(url_service_get).to eq url }
+
+    # raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    context "when handle invalid" do
+      let(:invalid_handle) { "/suffix" }
+
+      it { expect { url_service.get(invalid_handle) }.to raise_exception(RuntimeError, "Handle string '#{invalid_handle}' invalid.") }
     end
 
-    context "when handle exist" do
-      it { expect(url_service.get(handle)).to eq url }
-    end
-
+    # return nil if 'handle' does NOT exist, otherwise
     context "when handle does not exist" do
-      it { expect(url_service.get(new_handle)).to be_nil }
+      let(:value_lines) { [] }
+
+      it { expect(url_service_get).to be_nil }
+    end
+
+    # return nil if value line at 'index' does NOT exist, otherwise
+    context "when handle does not have an 'URL'" do
+      let(:value_lines) { [admin_value_line] }
+
+      it { expect(url_service_get).to be_nil }
+    end
+
+    # raise RuntimeError if value line at 'index' is NOT an 'URL', otherwise
+    context "when handle value at 'service index' is NOT an 'URL'" do
+      let(:admin_index) { service_index }
+      let(:url_index) { service_index + 1 }
+
+      it { expect { url_service_get }.to raise_exception(RuntimeError, "Value type '#{admin_value.type}' at index '#{admin_value.index}' is NOT an '#{url_value.type}' type.") }
+    end
+
+    # Make double sure that it only returns the 'URL' at 'service_index'!
+    context "when handle has 'URL' value but not at 'service_idnex;" do
+      let(:admin_index) { service_index + 1 }
+      let(:url_index) { service_index + 2 }
+
+      it { expect(url_service_get).to be_nil }
     end
   end
 
   describe "#set" do
-    context "when handle exist" do
-      it { expect(url_service.set(handle, new_url)).to eq new_url }
+    subject(:url_service_set) { url_service.set(handle, new_url) }
+
+    # return 'url' of 'index' value line.
+    it { expect(url_service_set).to eq new_url }
+
+    # raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    context "when handle invalid" do
+      let(:invalid_handle) { "prefix/" }
+
+      it { expect { url_service.set(invalid_handle, new_url) }.to raise_exception(RuntimeError, "Handle string '#{invalid_handle}' invalid.") }
     end
 
-    context "when handle does not exist" do
-      it { expect(url_service.set(new_handle, new_url)).to eq new_url }
+    # raise RuntimeError if 'url' is invalid, scheme/protocol://host name[:port number] [/path][/query_string][/#fragment], otherwise
+    context "when url invalid" do
+      let(:invalid_url) { "u r l" }
+
+      it { expect { url_service.set(handle, invalid_url) }.to raise_exception(URI::InvalidURIError, "bad URI(is not URI?): \"#{invalid_url}\"") }
+    end
+
+    context "when handle does NOT exist" do
+      let(:value_lines) { [] }
+
+      before { allow(service).to receive(:create).with(HandleRest::Handle.from_s(handle)).and_return [admin_value_line] }
+
+      it { expect(url_service_set).to eq new_url }
+
+      context "when failed to create handle" do
+        before { allow(service).to receive(:create).with(HandleRest::Handle.from_s(handle)).and_return [] }
+
+        it { expect { url_service_set }.to raise_exception(RuntimeError, "Failed to create handle 'prefix/suffix.'") }
+      end
+    end
+
+    # raise RuntimeError if value line at 'index' is NOT an 'URL', otherwise
+    context "when handle value at 'service index' is NOT an 'URL'" do
+      let(:admin_index) { service_index }
+      let(:url_index) { service_index + 1 }
+
+      it { expect { url_service_set }.to raise_exception(RuntimeError, "Value type '#{admin_value.type}' at index '#{admin_value.index}' is NOT an '#{url_value.type}' type.") }
+    end
+
+    # raise RuntimeError if add/replace of 'url' of value line at 'index' fails, otherwise
+    describe "add/replace failures" do
+      context "when adding new url fails" do
+        let(:value_lines) { [admin_value_line] }
+        let(:new_value_lines) { [admin_value_line] }
+
+        it { expect { url_service_set }.to raise_exception(RuntimeError, "Failed to add url '#{new_url}' to '#{handle}' at index '#{service_index}'.") }
+      end
+
+      context "when failure deletes url" do
+        let(:new_value_lines) { [] }
+
+        it { expect { url_service_set }.to raise_exception(RuntimeError, "Failure deleted url '#{url}' from '#{handle}' at index '#{service_index}'!!!") }
+      end
+
+      context "when replacing old url fails" do
+        let(:new_value_lines) { value_lines }
+
+        it { expect { url_service_set }.to raise_exception(RuntimeError, "Failed to replace url '#{url}' with '#{new_url}' for '#{handle}' at index '#{service_index}'.") }
+      end
+
+      context "when failure corrupts url" do
+        let(:new_url_value) { HandleRest::UrlValue.from_s(corrupted_url) }
+
+        it { expect { url_service_set }.to raise_exception(RuntimeError, "Failure corrupted url '#{url}' with '#{corrupted_url}' for '#{handle}' at index '#{service_index}'!!!") }
+      end
     end
   end
 end

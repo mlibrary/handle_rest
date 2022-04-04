@@ -44,6 +44,11 @@ module HandleRest
       suffix <=> other.suffix
     end
 
+    # @return [NilHandle]
+    def self.nil
+      NilHandle.from_s
+    end
+
     private
 
     # Initialize

@@ -8,7 +8,7 @@ module HandleRest
     # @raise [RuntimeError] if invalid url form
     def initialize(value)
       super
-      raise "URL value '#{@value}' invalid form." unless !@value.nil?
+      URI.parse(@value)
     end
 
     # Value Type

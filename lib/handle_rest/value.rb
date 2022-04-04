@@ -70,9 +70,16 @@ module HandleRest
         UrlValue.from_h(data["format"], data["value"])
       when "URN"
         UrnValue.from_h(data["format"], data["value"])
+      when "NIL"
+        NilValue.from_h(data["format"], data["value"])
       else
         raise "Value unexpected { type: #{type}, data: #{data} }"
       end
+    end
+
+    # @return [NilValueLine]
+    def self.nil
+      NilValue.new
     end
   end
 end
