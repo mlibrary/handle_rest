@@ -5,7 +5,6 @@ describe HandleRest::UrlService do
 
   let(:service_index) { 1 }
   let(:service) { instance_double(HandleRest::Service, "service") }
-  let(:is_a_service) { true }
   let(:handle) { "prefix/suffix" }
   let(:value_lines) { [admin_value_line, url_value_line] }
   let(:admin_value_line) { HandleRest::ValueLine.new(admin_index, admin_value) }
@@ -22,9 +21,9 @@ describe HandleRest::UrlService do
   let(:corrupted_url) { new_url.sub("www", "corrupted") }
 
   before do
-    allow(service).to receive(:is_a?).with(HandleRest::Service).and_return is_a_service
-    allow(service).to receive(:get).with(HandleRest::Handle.from_s(handle)).and_return value_lines
-    allow(service).to receive(:set).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_return new_value_lines
+    allow(service).to receive(:is_a?).with(HandleRest::Service).and_return true
+    allow(service).to receive(:read).with(HandleRest::Handle.from_s(handle)).and_return value_lines
+    allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_return new_value_lines
   end
 
   describe "#initialize" do
@@ -32,17 +31,27 @@ describe HandleRest::UrlService do
     it { expect { url_service }.not_to raise_exception }
 
     # raise RuntimeError if 'index' is not an Integer greater than zero, otherwise
+    context "when service index nil" do
+      subject(:url_service) { described_class.new(nil, service) }
+
+      it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'index' is not an Integer greater than zero.") }
+    end
+
     context "when service index < 1" do
-      let(:service_index) { 0 }
-      let(:value_lines) { [] } # To keep the before allow service get from raising an exception
-      let(:new_value_lines) { [] } # To keep the before allow service get from raising an exception
+      subject(:url_service) { described_class.new(0, service) }
 
       it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'index' is not an Integer greater than zero.") }
     end
 
     # raise RuntimeError if 'service' is not an instance of Service, otherwise
-    context "when not a HandleService" do
-      let(:is_a_service) { false }
+    context "when handle service nil" do
+      subject(:url_service) { described_class.new(service_index, nil) }
+
+      it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'service' is not an instance of Service.") }
+    end
+
+    context "when handle service not a HandleService" do
+      before { allow(service).to receive(:is_a?).with(HandleRest::Service).and_return false }
 
       it { expect { url_service }.to raise_exception(RuntimeError, "Parameter 'service' is not an instance of Service.") }
     end
@@ -55,10 +64,16 @@ describe HandleRest::UrlService do
     it { expect(url_service_get).to eq url }
 
     # raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
-    context "when handle invalid" do
-      let(:invalid_handle) { "/suffix" }
+    context "when handle nil" do
+      subject(:url_service_get) { url_service.get(nil) }
 
-      it { expect { url_service.get(invalid_handle) }.to raise_exception(RuntimeError, "Handle string '#{invalid_handle}' invalid.") }
+      it { expect { url_service_get }.to raise_exception(RuntimeError, "Handle string '' invalid.") }
+    end
+
+    context "when handle invalid" do
+      subject(:url_service_get) { url_service.get("handle") }
+
+      it { expect { url_service_get }.to raise_exception(RuntimeError, "Handle string 'handle' invalid.") }
     end
 
     # return nil if 'handle' does NOT exist, otherwise
@@ -89,6 +104,13 @@ describe HandleRest::UrlService do
       let(:url_index) { service_index + 2 }
 
       it { expect(url_service_get).to be_nil }
+    end
+
+    # raise RuntimeError if get of 'url' value line at 'index' fails, otherwise
+    context "when service read fails" do
+      before { allow(service).to receive(:read).with(HandleRest::Handle.from_s(handle)).and_raise RuntimeError }
+
+      it { expect { url_service_get }.to raise_exception RuntimeError }
     end
   end
 
@@ -134,8 +156,8 @@ describe HandleRest::UrlService do
       it { expect { url_service_set }.to raise_exception(RuntimeError, "Value type '#{admin_value.type}' at index '#{admin_value.index}' is NOT an '#{url_value.type}' type.") }
     end
 
-    # raise RuntimeError if add/replace of 'url' of value line at 'index' fails, otherwise
-    describe "add/replace failures" do
+    # raise RuntimeError if set of 'url' to value line at 'index' fails, otherwise
+    describe "service write failures" do
       context "when adding new url fails" do
         let(:value_lines) { [admin_value_line] }
         let(:new_value_lines) { [admin_value_line] }
@@ -159,6 +181,12 @@ describe HandleRest::UrlService do
         let(:new_url_value) { HandleRest::UrlValue.from_s(corrupted_url) }
 
         it { expect { url_service_set }.to raise_exception(RuntimeError, "Failure corrupted url '#{url}' with '#{corrupted_url}' for '#{handle}' at index '#{service_index}'!!!") }
+      end
+
+      context "when service write fails" do
+        before { allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_raise RuntimeError }
+
+        it { expect { url_service_set }.to raise_exception RuntimeError }
       end
     end
   end

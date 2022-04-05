@@ -70,6 +70,23 @@ module HandleRest
       end
     end
 
+    # Post Handle Value Lines
+    #
+    # @param handle [Handle] The handle to create
+    # @param value_lines [[ValueLine]]
+    # @return [Boolean] true
+    # @raise [RuntimeError] if the handle server returns an error.
+    def post(handle, value_lines)
+      handle_str = handle.to_s
+      handle_str += "?index=various" if update
+      response = @conn.put(handle_str, value_lines)
+      if response.success?
+        true
+      else
+        raise_response_error(response)
+      end
+    end
+
     # Put Handle Value Lines
     #
     # @param handle [Handle] The handle to create
@@ -93,7 +110,7 @@ module HandleRest
     # @param handle [Handle]
     # @return [Boolean] true
     # @raise [RuntimeError] if the handle server returns an error.
-    def delete(handle)
+    def delete(handle, indices = [])
       response = @conn.delete(handle.to_s)
       if response.success?
         true

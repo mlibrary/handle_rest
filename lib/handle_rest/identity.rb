@@ -43,7 +43,7 @@ module HandleRest
 
     # @return [NilIdentity]
     def self.nil
-      NilIdentity.new
+      NilIdentity.send(:new)
     end
 
     private

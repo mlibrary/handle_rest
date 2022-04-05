@@ -1,7 +1,7 @@
 module HandleRest
   # Service
   #
-  # A simple serive to get, create, set, and delete a handle's value lines.
+  # A simple service to create and delete handles and read, write, and remove its value lines.
   class Service
     # Initialize the Service
     #
@@ -20,84 +20,101 @@ module HandleRest
       @handle_service = handle_service
     end
 
-    # Get a Handle's Value Lines
-    #
-    # @param handle [Handle]
-    # @return [Array<ValueLine>]
-    # @raise [RuntimeError]
-    def get(handle)
-      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
-      @handle_service.get(handle)
-    end
-
     # Create a new Handle with default value lines
+    #
+    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #     return value lines of 'handle' if 'handle' exist, otherwise
+    #       raise RuntimeError if create new 'handle' fails, otherwise
+    #         return value lines of new 'handle' a.k.a. default value lines
     #
     # @param handle [Handle]
     # @return [Array<ValueLine>]
     # @raise [RuntimeError]
     def create(handle)
       raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
-      value_lines = get(handle)
+      value_lines = read(handle)
       return value_lines unless value_lines.empty?
 
-      @handle_service.set(handle, @default_value_lines)
-      get(handle)
+      @handle_service.post(handle, @default_value_lines)
+      read(handle)
     end
 
-    # Set a Handle's value lines OR a subset of its value lines
+    # Delete a Handle
+    #
+    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #     raise RuntimeError if delete 'handle' fails, otherwise
+    #       return deleted value lines of 'handle'
+    #
+    # @param handle [Handle]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def delete(handle)
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      value_lines = read(handle)
+      return [] if value_lines.empty?
+
+      @handle_service.delete(handle)
+      value_lines
+    end
+
+    # Read a Handle's Value Lines
+    #
+    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #     return [] if 'handle' does NOT exist, otherwise
+    #       raise RuntimeError if read 'handle' fails, otherwise
+    #         return value lines of 'handle'
+    #
+    # @param handle [Handle]
+    # @return [Array<ValueLine>]
+    # @raise [RuntimeError]
+    def read(handle)
+      raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
+      @handle_service.get(handle)
+    end
+
+    # Write a Handle's value lines
+    #
+    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #     raise RuntimeError if write 'handle' fails, otherwise
+    #       return value lines of 'handle'
     #
     # @param handle [Handle]
     # @param value_lines [Array<ValueLine>]
     # @return [Array<ValueLine>]
     # @raise [RuntimeError]
-    def set(handle, value_lines)
+    def write(handle, value_lines)
       raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
       raise "Parameter 'value_lines' must be an Array<ValueLine>." unless arrayValueLines?(value_lines)
-      return get(handle) if value_lines.empty?
+      return read(handle) if value_lines.empty?
 
       create(handle)
-      @handle_service.set(handle, value_lines, add_replace: true)
-      get(handle)
+      @handle_service.put(handle, value_lines)
+      read(handle)
     end
 
-    # Delete a Handle OR remove a subset of its value lines
+    # Remove a Handle's value lines
+    #
+    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #     raise RuntimeError if 'indices' is not an Array<Integer> of integers > 0, otherwise
+    #       raise RuntimeError if remove value lines of 'handle' at 'indices' fails, otherwise
+    #         return value lines of 'handle'
     #
     # @param handle [Handle]
     # @param indices [Array<Integer>]
-    # @param value_lines [Array<ValueLine>]
     # @return [Array<ValueLine>]
     # @raise [RuntimeError]
-    def delete(handle, indices: [], value_lines: [])
+    def remove(handle, indices)
       raise "Parameter 'handle' must be an instance of Handle." unless handle.is_a?(Handle)
-      raise "Parameter 'indices' must be an Array<Integer> where index > 0." unless arrayIndices?(indices)
-      raise "Parameter 'value_lines' must be an Array<ValueLine>." unless arrayValueLines?(value_lines)
-      handle_value_lines = get(handle)
-      return [] if handle_value_lines.empty?
+      raise "Parameter 'indices' must be an Array<Integer> of integers > 0." unless arrayIndices?(indices)
+      value_lines = read(handle)
+      return value_lines if value_lines.empty? || indices.empty?
 
-      remove_indices = (indices + value_lines.map(&:index)).uniq
-      return @handle_service.delete(handle) if remove_indices.empty?
+      remove_value_lines = value_lines.map { |value_line| value_line if indices.include?(value_line.index) }.compact
+      return value_lines if remove_value_lines.empty?
 
-      remove_value_lines = []
-      remaining_value_lines = []
-      handle_value_lines.each do |value_line|
-        if remove_indices.include?(value_line.index)
-          remove_value_lines << value_line
-        else
-          remaining_value_lines << value_line
-        end
-      end
-      return remaining_value_lines if remove_value_lines.empty?
-
-      if hasAdminValueLine?(remaining_value_lines)
-        @handle_service.delete(handle, remove_value_lines.map(&:index))
-      else
-        @handle_service.delete(handle)
-      end
-    end
-
-    # @return [NilService]
-    def self.nil
-      NilService.new
+      remove_indices = remove_value_lines.map(&:index).compact
+      @handle_service.delete(handle, remove_indices)
+      read(handle)
     end
 
     private

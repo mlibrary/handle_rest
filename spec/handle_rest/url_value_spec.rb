@@ -28,7 +28,7 @@ describe HandleRest::UrlValue do
     expect { described_class.from_h("String", url) }.to raise_exception(RuntimeError, "UrlValue unexpected format 'String'")
   end
 
-  context "when url invalid form" do
+  context "when url nil" do
     let(:url) {}
 
     it "#self.to_s raises exception" do
@@ -41,6 +41,22 @@ describe HandleRest::UrlValue do
 
     it "#self.from_h raises exception" do
       expect { described_class.from_h("string", url) }.to raise_exception(URI::InvalidURIError, "bad URI(is not URI?): nil")
+    end
+  end
+
+  context "when url invalid form" do
+    let(:url) { "i n v a l i d" }
+
+    it "#self.to_s raises exception" do
+      expect { url_value.to_s }.to raise_exception(URI::InvalidURIError, "bad URI(is not URI?): \"#{url}\"")
+    end
+
+    it "#self.from_s raises exception" do
+      expect { described_class.from_s(url) }.to raise_exception(URI::InvalidURIError, "bad URI(is not URI?): \"#{url}\"")
+    end
+
+    it "#self.from_h raises exception" do
+      expect { described_class.from_h("string", url) }.to raise_exception(URI::InvalidURIError, "bad URI(is not URI?): \"#{url}\"")
     end
   end
 end

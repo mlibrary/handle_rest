@@ -70,14 +70,6 @@ module HandleRest
       }
     end
 
-    # Deserialize
-    #
-    # @param _str [String]
-    # @return [NilValueLine]
-    def self.from_s(_str)
-      new
-    end
-
     # Deserialize from hash (see #as_json)
     #
     # @param _value [Hash]
