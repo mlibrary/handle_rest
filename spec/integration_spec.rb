@@ -6,7 +6,6 @@ USER = ENV["HS_USER"]
 PASSWORD = ENV["HS_PASSWORD"]
 SSL_VERIFY = !(ENV["HS_SSL_VERIFY"] == "0")
 
-# rubocop:disable RSpec/NestedGroups
 describe "INTEGRATION", if: ENV["INTEGRATION"] == "1" do
   # root
   let(:root_id) { HandleRest::Identity.from_s(USER) }

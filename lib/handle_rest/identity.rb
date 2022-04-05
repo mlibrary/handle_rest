@@ -41,6 +41,11 @@ module HandleRest
       handle <=> other.handle
     end
 
+    # @return [NilIdentity]
+    def self.nil
+      NilIdentity.new
+    end
+
     private
 
     # Initialize

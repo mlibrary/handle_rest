@@ -32,7 +32,7 @@ module HandleRest
     # Serialize to hash
     #
     # @param options [Hash]
-    # @return [Hash] {format: "string", value: [String]}
+    # @return [Hash] !{format: "string", value: [String]}
     def as_json(options = {})
       {
         format: "string",
@@ -51,7 +51,7 @@ module HandleRest
     # Deserialize from hash (see #as_json)
     #
     # @param type [String] "HS_ADMIN"|"HS_PUBKEY"|"HS_SECKEY"|"HS_VLIST"|"EMAIL"|"URL"|"URN"
-    # @param data [HASH] {format: [String], value: [Hash]}
+    # @param data [HASH] !{format: [String], value: [Hash]}
     # @return [AdminValue]
     # @raise [RuntimeError] if type unknown.
     def self.from_h(type, data)
@@ -70,9 +70,16 @@ module HandleRest
         UrlValue.from_h(data["format"], data["value"])
       when "URN"
         UrnValue.from_h(data["format"], data["value"])
+      when "NIL"
+        NilValue.from_h(data["format"], data["value"])
       else
         raise "Value unexpected { type: #{type}, data: #{data} }"
       end
+    end
+
+    # @return [NilValueLine]
+    def self.nil
+      NilValue.new
     end
   end
 end

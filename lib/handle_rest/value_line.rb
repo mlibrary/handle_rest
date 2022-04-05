@@ -16,8 +16,8 @@ module HandleRest
     #
     # @param index [Integer]
     # @param value [Value]
-    # @param permissions: [PermissionSet]
-    # @param time_to_live: [Integer]
+    # @param permissions [PermissionSet]
+    # @param time_to_live [Integer]
     def initialize(index, value, permissions: nil, time_to_live: nil)
       self.index = index
       self.value = value
@@ -76,7 +76,7 @@ module HandleRest
     # Serialize to hash
     #
     # @param options [Hash]
-    # @return [Hash] {index: [Integer], type: [String], data: [Blob], ttl: [Integer], permissions: [String]}
+    # @return [Hash] !{index: [Integer], type: [String], data: [Blob], ttl: [Integer], permissions: [String]}
     def as_json(options = {})
       {
         index: @index,
@@ -97,7 +97,7 @@ module HandleRest
 
     # Deserialize from hash (see #as_json)
     #
-    # @param value [Hash] {index: [Integer], type: [String], data: [Blob], permissions: [String], ttl: [Integer]}
+    # @param value [Hash] !{index: [Integer], type: [String], data: [Blob], permissions: [String], ttl: [Integer]}
     # @return [ValueLine]
     def self.from_h(value)
       permissions = nil
@@ -108,6 +108,11 @@ module HandleRest
         permissions: permissions,
         time_to_live: value["ttl"]
       )
+    end
+
+    # @return [NilValueLine]
+    def self.nil
+      NilValueLine.new
     end
   end
 end

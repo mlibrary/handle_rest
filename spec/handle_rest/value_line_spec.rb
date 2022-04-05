@@ -31,11 +31,11 @@ describe HandleRest::ValueLine do
     end
 
     it "does NOT raise exception on positive integer index and derived value value" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil)) }.not_to raise_exception
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil)) }.not_to raise_exception
     end
 
     it "default permission set == '1110'" do
-      expect(described_class.new(1, HandleRest::UrlValue.new(nil)).permissions).to eq HandleRest::PermissionSet.from_s("1110")
+      expect(described_class.new(1, HandleRest::UrnValue.new(nil)).permissions).to eq HandleRest::PermissionSet.from_s("1110")
     end
 
     it "default permission set == '1100' for HS_PUBKEY" do
@@ -47,34 +47,34 @@ describe HandleRest::ValueLine do
     end
 
     it "raise exception on non-permission set permission set" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permissions: HandleRest::AdminPermissionSet.new) }.to raise_exception(RuntimeError, "permission set must be a kind of HandleRest::PermissionSet")
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil), permissions: HandleRest::AdminPermissionSet.new) }.to raise_exception(RuntimeError, "permission set must be a kind of HandleRest::PermissionSet")
     end
 
     it "does NOT raise exception on permission set permission set" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), permissions: HandleRest::PermissionSet.new) }.not_to raise_exception
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil), permissions: HandleRest::PermissionSet.new) }.not_to raise_exception
     end
 
     it "default time to live == 86400" do
-      expect(described_class.new(1, HandleRest::UrlValue.new(nil)).time_to_live).to eq 86400
+      expect(described_class.new(1, HandleRest::UrnValue.new(nil)).time_to_live).to eq 86400
     end
 
     it "raise exception on non-integer time to live" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), time_to_live: "zero") }.to raise_exception(RuntimeError, "time to live must be an integer greater than or equal to zero")
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil), time_to_live: "zero") }.to raise_exception(RuntimeError, "time to live must be an integer greater than or equal to zero")
     end
 
     it "raise exception on negative integer time to live" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), time_to_live: -1) }.to raise_exception(RuntimeError, "time to live must be an integer greater than or equal to zero")
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil), time_to_live: -1) }.to raise_exception(RuntimeError, "time to live must be an integer greater than or equal to zero")
     end
 
     it "does NOT raise exception on zero time to live" do
-      expect { described_class.new(1, HandleRest::UrlValue.new(nil), time_to_live: 0) }.not_to raise_exception
+      expect { described_class.new(1, HandleRest::UrnValue.new(nil), time_to_live: 0) }.not_to raise_exception
     end
   end
 
   describe "methods" do
     let(:value_line) { described_class.new(index, value, permissions: permissions, time_to_live: ttl) }
     let(:index) { 1 }
-    let(:value) { HandleRest::UrlValue.new("http://www.umich.edu") }
+    let(:value) { HandleRest::UrnValue.new("http://www.umich.edu") }
     let(:permissions) { HandleRest::PermissionSet.from_s("0011") }
     let(:ttl) { 1999 }
 

@@ -10,17 +10,18 @@ module HandleRest
 
     # Serialize
     #
-    # @return [String] "prefix/suffix"
+    # @return [String] e.g. "prefix/suffix"
     def to_s
       "#{@prefix}/#{@suffix}"
     end
 
     # Deserialize
     #
-    # @param str [String] "prefix/suffix"
+    # @param str [String] e.g. "prefix/suffix"
     # @return [Handle]
     def self.from_s(str)
-      m = /^\A([^\/\s]+)\/(\S+)\z$/i.match(str.strip)
+      m = /^\A([^\/\s]+)\/(\S+)\z$/i.match(str&.strip)
+      raise "Handle string '#{str&.strip}' invalid." unless m && m[1] && m[2]
       prefix = m[1]
       suffix = m[2]
       Handle.send(:new, prefix, suffix)
@@ -41,6 +42,11 @@ module HandleRest
     def <=>(other)
       return prefix <=> other.prefix unless (prefix <=> other.prefix) == 0
       suffix <=> other.suffix
+    end
+
+    # @return [NilHandle]
+    def self.nil
+      NilHandle.from_s
     end
 
     private

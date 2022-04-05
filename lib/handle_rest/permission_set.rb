@@ -12,10 +12,10 @@ module HandleRest
 
     # Initialize
     #
-    # @param admin_read: [Boolean]
-    # @param admin_write: [Boolean]
-    # @param public_read: [Boolean]
-    # @param public_write: [Boolean]
+    # @param admin_read [Boolean]
+    # @param admin_write [Boolean]
+    # @param public_read [Boolean]
+    # @param public_write [Boolean]
     # @return [PermissionSet]
     def initialize(
       admin_read: true,

@@ -32,7 +32,7 @@ module HandleRest
     # Serialize to hash
     #
     # @param options [Hash]
-    # @return [Hash] { format: "admin", value: { index: [Integer], permissions: [String], handle: [String] }}
+    # @return [{format: "admin", value: {index: [Integer], permissions: [String], handle: [String]}}]
     def as_json(options = {})
       {
         format: "admin",
@@ -56,7 +56,7 @@ module HandleRest
     # Deserialize from hash (see #as_json)
     #
     # @param format [String] "admin"
-    # @param value [{ index: [Integer], permissions: [String], handle: [String]}]
+    # @param value [{index: [Integer], permissions: [String], handle: [String]}]
     # @return [AdminValue]
     # @raise [RuntimeError] if format != 'admin'.
     def self.from_h(format, value)

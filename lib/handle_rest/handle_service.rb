@@ -102,6 +102,11 @@ module HandleRest
       end
     end
 
+    # @return [NilHandleService]
+    def self.nil
+      NilHandleService.new
+    end
+
     private
 
     # Raise Response Error

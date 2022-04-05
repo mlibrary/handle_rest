@@ -11,7 +11,7 @@ module HandleRest
     # Deserialize
     #
     # @param format [String] "string"
-    # @param value [String] "wolverine@umich.edu"
+    # @param value [String] e.g. "wolverine@umich.edu"
     # @return [EmailValue]
     # @raise [RuntimeError] if format != 'string'.
     def self.from_h(format, value)

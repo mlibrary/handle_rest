@@ -30,18 +30,18 @@ module HandleRest
     #
     # Default is all permissions
     #
-    # @param add_handle: [Boolean]
-    # @param delete_handle: [Boolean]
-    # @param add_naming_authority: [Boolean]
-    # @param delete_naming_authority: [Boolean]
-    # @param modify_values: [Boolean]
-    # @param remove_values: [Boolean]
-    # @param add_values: [Boolean]
-    # @param read_values: [Boolean]
-    # @param modify_administrator: [Boolean]
-    # @param remove_administrator: [Boolean]
-    # @param add_administrator: [Boolean]
-    # @param list_handles: [Boolean]
+    # @param add_handle [Boolean]
+    # @param delete_handle [Boolean]
+    # @param add_naming_authority [Boolean]
+    # @param delete_naming_authority [Boolean]
+    # @param modify_values [Boolean]
+    # @param remove_values [Boolean]
+    # @param add_values [Boolean]
+    # @param read_values [Boolean]
+    # @param modify_administrator [Boolean]
+    # @param remove_administrator [Boolean]
+    # @param add_administrator [Boolean]
+    # @param list_handles [Boolean]
     # @return [AdminPermissionSet]
     def initialize(
       add_handle: true,
