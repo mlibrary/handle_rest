@@ -62,4 +62,8 @@ describe HandleRest::Identity do
     b = described_class.send(:new, index, HandleRest::Handle.from_s(handle.to_s.reverse))
     expect(a <=> b).to eq(1)
   end
+
+  it "#self.nil returns instance of NilIdentity" do
+    expect(described_class.nil).to eq HandleRest::NilIdentity.send(:new)
+  end
 end

@@ -27,11 +27,11 @@ module HandleRest
 
     # Deserialize
     #
-    # @param url [String] scheme/protocol://host name[:port number] [/path][/query_string][/#fragment]
+    # @param value [String] scheme/protocol://host name[:port number] [/path][/query_string][/#fragment]
     # @return [UrlValue]
     # @raise [RuntimeError] if invalid url form
-    def self.from_s(url)
-      new(url)
+    def self.from_s(value)
+      new(value)
     end
 
     # Deserialize

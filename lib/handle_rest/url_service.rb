@@ -26,13 +26,14 @@ module HandleRest
     #     return nil if 'handle' does NOT exist, otherwise
     #       return nil if value line at 'index' does NOT exist, otherwise
     #         raise RuntimeError if value line at 'index' is NOT an 'URL', otherwise
-    #           return 'url' of 'index' value line.
+    #           raise RuntimeError if get of 'url' value line at 'index' fails, otherwise
+    #             return 'url' of 'index' value line.
     #
     # @param handle [String] index:prefix/suffix
     # @return [String] url or nil
     # @raise [RuntimeError]
     def get(handle)
-      value_lines = @service.get(Handle.from_s(handle))
+      value_lines = @service.read(Handle.from_s(handle))
       index_value_lines = value_lines.select { |value_line| value_line.index == @index }
       return nil if index_value_lines.empty?
       index_value = index_value_lines[0].value
@@ -45,7 +46,7 @@ module HandleRest
     #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
     #     raise RuntimeError if 'url' is invalid, scheme/protocol://host name[:port number] [/path][/query_string][/#fragment], otherwise
     #       raise RuntimeError if value line at 'index' exist and is NOT an 'URL', otherwise
-    #         raise RuntimeError if add/update of 'url' of value line at 'index' fails, otherwise
+    #         raise RuntimeError if set of 'url' value line at 'index' fails, otherwise
     #           return 'url' of 'index' value line
     #
     # @param handle [String] index:prefix/suffix
@@ -55,7 +56,7 @@ module HandleRest
     def set(handle, new_url)
       hdl = Handle.from_s(handle)
       url = UrlValue.from_s(new_url)
-      value_lines = @service.get(hdl)
+      value_lines = @service.read(hdl)
       value_lines = @service.create(hdl) if value_lines.empty?
       raise "Failed to create handle '#{handle}.'" if value_lines.empty?
       index_value_lines = value_lines.select { |value_line| value_line.index == @index }
@@ -63,7 +64,7 @@ module HandleRest
       raise "Value type '#{index_value.type}' at index '#{index_value.index}' is NOT an 'URL' type." unless index_value.nil? || index_value.type == "URL"
       old_url = index_value&.value
       index_value = nil
-      value_lines = @service.set(hdl, url)
+      value_lines = @service.write(hdl, url)
       index_value_lines = value_lines.select { |value_line| value_line.index == @index }
       index_value = index_value_lines[0].value unless index_value_lines.empty?
       raise "Failed to add url '#{new_url}' to '#{handle}' at index '#{@index}'." if old_url.nil? && index_value.nil?

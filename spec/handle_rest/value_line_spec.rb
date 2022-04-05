@@ -86,8 +86,12 @@ describe HandleRest::ValueLine do
       expect(value_line.to_json).to eq({index: index, type: value.type, data: value, ttl: ttl, permissions: permissions.to_s}.to_json)
     end
 
-    it "#self.from_h return instance" do
+    it "#self.from_h returns instance" do
       expect(described_class.from_h({"index" => index.to_s, "type" => value.type, "data" => {"format" => "string", "value" => value.value.to_s}, "permissions" => permissions.to_s, "time_to_live" => ttl})).to eq value_line
+    end
+
+    it "#self.nil returns instance of NilValueLine" do
+      expect(described_class.nil).to eq HandleRest::NilValueLine.new
     end
   end
 end

@@ -34,6 +34,7 @@ describe HandleRest::Value do
       allow(HandleRest::EmailValue).to receive(:from_h).with(data["format"], data["value"]).and_return "EmailValue"
       allow(HandleRest::UrlValue).to receive(:from_h).with(data["format"], data["value"]).and_return "UrlValue"
       allow(HandleRest::UrnValue).to receive(:from_h).with(data["format"], data["value"]).and_return "UrnValue"
+      allow(HandleRest::NilValue).to receive(:from_h).with(data["format"], data["value"]).and_return "NilValue"
     end
 
     it "HS_ADMIN" do
@@ -62,6 +63,10 @@ describe HandleRest::Value do
 
     it "URN" do
       expect(described_class.from_h("URN", data)).to eq "UrnValue"
+    end
+
+    it "NIL" do
+      expect(described_class.from_h("NIL", data)).to eq "NilValue"
     end
 
     it "UNKNOWN" do
