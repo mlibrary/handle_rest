@@ -6,6 +6,7 @@
 !*.gemspec
 !bin/console
 !bin/setup
+!bin/wait-for-http-service.sh
 !lib
 !spec
 !.r*

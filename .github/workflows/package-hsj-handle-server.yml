@@ -1,4 +1,4 @@
-name: package-handle-net-server
+name: package-hsj-handle-server
 
 on: workflow_dispatch
 
@@ -13,11 +13,11 @@ jobs:
         id: url-GPR
         with:
           access_token: ${{ secrets.GITHUB_TOKEN }}
-          context: ./image/handle-net-server
-          dockerfile: ./image/handle-net-server/Dockerfile
-          image_name: handle-net-server
+          context: ./image/hsj-handle-server
+          dockerfile: ./image/hsj-handle-server/Dockerfile
+          image_name: hsj-handle-server
           tags: |
             latest
-            ${{ github.sha }}
+#            ${{ github.sha }}
       - name: imageURL
         run: echo ${{ steps.url-GPR.outputs.imageURL }}
