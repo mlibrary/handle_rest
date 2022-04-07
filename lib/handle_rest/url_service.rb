@@ -50,7 +50,7 @@ module HandleRest
     #           return 'url' of 'index' value line
     #
     # @param handle [String] index:prefix/suffix
-    # @param url [String] scheme/protocol://host name[:port number] [/path][/query_string][/#fragment]
+    # @param new_url [String] scheme/protocol://host name[:port number] [/path][/query_string][/#fragment]
     # @return [String] url
     # @raise [RuntimeError]
     def set(handle, new_url)

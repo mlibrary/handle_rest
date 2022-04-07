@@ -65,11 +65,11 @@ describe "INTEGRATION", if: ENV["INTEGRATION"] == "1" do
     # 200 HS_VLIST 300:PREFIX/PREFIX
     # 201 HS_VLIST 300:PREFIX/ADMIN
     # 300 HS_SECKEY PASSWORD
-    root_hs.put(root_id.handle, [root_admin_value_line, admin_admin_value_line, root_reference_list_value_line, admin_reference_list_value_line, root_secret_key_value_line])
+    root_hs.post(root_id.handle, [root_admin_value_line, admin_admin_value_line, root_reference_list_value_line, admin_reference_list_value_line, root_secret_key_value_line])
     # PREFIX/ADMIN
     # 100 HS_ADMIN 200:111111111111:PREFIX/PREFIX
     # 300 HS_SECKEY PASSWORD
-    root_hs.put(admin_id.handle, [root_admin_value_line, admin_secret_key_value_line])
+    root_hs.post(admin_id.handle, [root_admin_value_line, admin_secret_key_value_line])
   end
 
   after do
@@ -165,7 +165,7 @@ describe "INTEGRATION", if: ENV["INTEGRATION"] == "1" do
   # *************************************************************************************
   ["111111111111", "110011110011", "000000000000"].each do |admin_permission_str|
     context "when admin permissions #{admin_permission_str}" do
-      let(:admin_ps) { HandleRest::AdminPermissionSet.from_s(admin_permission_str.dup) }
+      let(:admin_ps) { HandleRest::AdminPermissionSet.from_s(admin_permission_str) }
 
       it "has two handles" do
         expect(root_hs.index(PREFIX)).to contain_exactly(root_id.handle, admin_id.handle)
@@ -192,30 +192,36 @@ describe "INTEGRATION", if: ENV["INTEGRATION"] == "1" do
         # 100 HS_ADMIN 200:111111111111:PREFIX/PREFIX
         # 101 HS_ADMIN 201:????????????:PREFIX/PREFIX
         # 1 URL <handle_url or new_handle_url>
-        # before { admin_hs.put(handle, [root_admin_value_line, admin_admin_value_line, handle_url_value_line]) }
+        # before { admin_hs.post(handle, [root_admin_value_line, admin_admin_value_line, handle_url_value_line]) }
         #
         # For some reason only the root can create handles which is probably because we are testing against
         # an Independent Handle Server (IHS) a.k.a. a rogue server, otherwise the commented out 'before' above
         # should have worked, in theory, unless I configured it wrong which is also a possibility.
-        before { root_hs.put(handle, [root_admin_value_line, admin_admin_value_line, handle_url_value_line]) }
+        before { root_hs.post(handle, [root_admin_value_line, admin_admin_value_line, handle_url_value_line]) }
 
         it "created the handle with expected values" do
           expect(admin_hs.get(handle)).to contain_exactly(root_admin_value_line, admin_admin_value_line, handle_url_value_line)
         end
 
         context "when updating the url value" do
-          before { admin_hs.put(handle, [handle_new_url_value_line], true) }
-
-          it "updated the handle with expected value" do
-            expect(admin_hs.get(handle)).to contain_exactly(root_admin_value_line, admin_admin_value_line, handle_new_url_value_line)
+          it "updated the handle with expected value" do # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength
+            if admin_ps.read_values && admin_ps.modify_values
+              admin_hs.patch(handle, [handle_new_url_value_line])
+              expect(admin_hs.get(handle)).to contain_exactly(root_admin_value_line, admin_admin_value_line, handle_new_url_value_line)
+            else
+              expect { admin_hs.patch(handle, [handle_new_url_value_line]) }.to raise_exception RuntimeError, "#{handle} - 400: Invalid Admin"
+            end
           end
         end
 
         context "when deleting the handle" do
-          before { admin_hs.delete(handle) }
-
-          it "delete the handle" do
-            expect { admin_hs.get(handle) }.to raise_exception(RuntimeError, "#{handle} - 100: Handle Not Found")
+          it "delete the handle" do # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength
+            if admin_ps.read_values && admin_ps.remove_values
+              admin_hs.delete(handle)
+              expect { admin_hs.get(handle) }.to raise_exception(RuntimeError, "#{handle} - 100: Handle Not Found")
+            else
+              expect { admin_hs.delete(handle) }.to raise_exception(RuntimeError, "#{handle} - 400: Invalid Admin")
+            end
           end
         end
       end
