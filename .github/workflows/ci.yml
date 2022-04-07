@@ -14,6 +14,54 @@ jobs:
       matrix:
         ruby-version: ['2.6', '2.7', '3.0']
 
+    services:
+      ihs-handle:
+        image: ghcr.io/gkostin1966/ihs-handle-server:latest
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            value: password
+          - name: MARIADB_USER
+            value: ihs
+          - name: MARIADB_PASSWORD
+            value: password
+          - name: MARIADB_ROOT_HOST
+            value: localhost
+          - name: MARIADB_MYSQL_LOCALHOST_USER
+            value: non_empty_value
+          - name: MARIADB_DATABASE
+            value: ihs
+          - name: INDEPENDENT_HANDLE_SERVER_PREFIX
+            value: IHS
+        ports:
+          - name: tcp-2641
+            protocol: TCP
+            containerPort: 2641
+          - name: udp-2641
+            protocol: UDP
+            containerPort: 2641
+          - name: tcp-8000
+            protocol: TCP
+            containerPort: 8000
+      ihs-mysql:
+        image: ghcr.io/gkostin1966/ihs-mysql-server:latest
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            value: password
+          - name: MARIADB_USER
+            value: ihs
+          - name: MARIADB_PASSWORD
+            value: password
+          - name: MARIADB_ROOT_HOST
+            value: localhost
+          - name: MARIADB_MYSQL_LOCALHOST_USER
+            value: non_empty_value
+          - name: MARIADB_DATABASE
+            value: ihs
+          - name: INDEPENDENT_HANDLE_SERVER_PREFIX
+            value: IHS
+        ports:
+          - containerPort: 3306
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby

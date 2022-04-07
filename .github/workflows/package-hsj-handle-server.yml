@@ -1,0 +1,23 @@
+name: package-hsj-handle-server
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Package
+        uses: craftech-io/package-action@v3.1.0
+        id: url-GPR
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+          context: ./image/hsj-handle-server
+          dockerfile: ./image/hsj-handle-server/Dockerfile
+          image_name: handle-rest/hsj-handle-server
+          tags: |
+            latest
+            ${{ github.sha }}
+      - name: imageURL
+        run: echo ${{ steps.url-GPR.outputs.imageURL }}
