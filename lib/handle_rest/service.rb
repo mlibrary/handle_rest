@@ -88,7 +88,7 @@ module HandleRest
       return read(handle) if value_lines.empty?
 
       create(handle)
-      @handle_service.put(handle, value_lines)
+      @handle_service.patch(handle, value_lines)
       read(handle)
     end
 
@@ -113,7 +113,7 @@ module HandleRest
       return value_lines if remove_value_lines.empty?
 
       remove_indices = remove_value_lines.map(&:index).compact
-      @handle_service.delete(handle, remove_indices)
+      @handle_service.remove(handle, remove_indices)
       read(handle)
     end
 
