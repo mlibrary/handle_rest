@@ -1,6 +1,8 @@
 require "faraday"
 
 module HandleRest
+  # Handle Service
+  #
   # Faraday-backed interface to Handle REST API
   class HandleService
     # Sets up a new connection to a Handle server REST API
@@ -13,7 +15,8 @@ module HandleRest
     # Currently, only secret key authentication is implemented.
     # @param ssl_verify [Boolean] (Use with care, and never in production) - set
     # to false only if the REST API is expected to use an invalid certificate.
-    # @return [HandleService] a usable service object
+    # @return [HandleService]
+    # @raise [RuntimeError] if faraday initialize returns an error.
     def initialize(url:, user:, password:, ssl_verify: true)
       @conn = Faraday.new(url: url,
         ssl: {verify: ssl_verify}) do |faraday|
@@ -26,7 +29,7 @@ module HandleRest
       end
     end
 
-    # Handle Count
+    # Prefix Handle Count
     #
     # @param prefix [String]
     # @return [Integer]
@@ -40,9 +43,9 @@ module HandleRest
       end
     end
 
-    # Handle Index
+    # Prefix Handle Index
     #
-    # @param prefix [String] handle prefix
+    # @param prefix [String]
     # @param page [Integer] pagination page number
     # @param page_size [Integer] pagination page size
     # @return [[Handle]]
@@ -59,7 +62,7 @@ module HandleRest
     # Get Handle Value Lines
     #
     # @param handle [Handle]
-    # @return [[ValueLine]] empty if the handle can't be found.
+    # @return [[ValueLine]]
     # @raise [RuntimeError] if the handle server returns an error.
     def get(handle)
       response = @conn.get(handle.to_s)
@@ -72,14 +75,12 @@ module HandleRest
 
     # Post Handle Value Lines
     #
-    # @param handle [Handle] The handle to create
+    # @param handle [Handle] The handle to recreate
     # @param value_lines [[ValueLine]]
     # @return [Boolean] true
     # @raise [RuntimeError] if the handle server returns an error.
     def post(handle, value_lines)
-      handle_str = handle.to_s
-      handle_str += "?index=various" if update
-      response = @conn.put(handle_str, value_lines)
+      response = @conn.put(handle.to_s, value_lines)
       if response.success?
         true
       else
@@ -87,17 +88,13 @@ module HandleRest
       end
     end
 
-    # Put Handle Value Lines
+    # Patch Handle Value Lines
     #
-    # @param handle [Handle] The handle to create
-    # @param value_lines [[ValueLine]]
-    # @param update [Boolean]
+    # @param handle [Handle] The handle to create/modify
     # @return [Boolean] true
     # @raise [RuntimeError] if the handle server returns an error.
-    def put(handle, value_lines, update = false)
-      handle_str = handle.to_s
-      handle_str += "?index=various" if update
-      response = @conn.put(handle_str, value_lines)
+    def patch(handle, value_lines)
+      response = @conn.put(handle.to_s + "?index=various", value_lines)
       if response.success?
         true
       else
@@ -105,12 +102,27 @@ module HandleRest
       end
     end
 
-    # Deletes a handle
+    # Remove Handle Value Lines At Indices
+    #
+    # @param handle [Handle]
+    # @param indices [Array<Integer] with values > 0
+    # @return [Boolean] true
+    # @raise [RuntimeError] if the handle server returns an error.
+    def remove(handle, indices = [])
+      response = @conn.delete(handle.to_s, indices)
+      if response.success?
+        true
+      else
+        raise_response_error(response)
+      end
+    end
+
+    # Delete Handle
     #
     # @param handle [Handle]
     # @return [Boolean] true
     # @raise [RuntimeError] if the handle server returns an error.
-    def delete(handle, indices = [])
+    def delete(handle)
       response = @conn.delete(handle.to_s)
       if response.success?
         true
@@ -119,16 +131,12 @@ module HandleRest
       end
     end
 
-    # @return [NilHandleService]
-    def self.nil
-      NilHandleService.new
-    end
-
     private
 
     # Raise Response Error
     #
     # @param response [Faraday::Response]
+    # @raise [RuntimeError]
     def raise_response_error(response)
       error = response.body
       raise "#{error["handle"]} - #{error["responseCode"]}: #{response_code_message(error["responseCode"])}"

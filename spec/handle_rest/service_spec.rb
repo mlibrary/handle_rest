@@ -27,8 +27,8 @@ describe HandleRest::Service do
     allow(handle_service).to receive(:get).with(handle).and_return value_lines, next_value_lines
     allow(handle_service).to receive(:post).with(handle, service_value_lines).and_return true
     allow(handle_service).to receive(:delete).with(handle).and_return true
-    allow(handle_service).to receive(:put).with(handle, put_value_lines).and_return true
-    allow(handle_service).to receive(:delete).with(handle, indices).and_return true
+    allow(handle_service).to receive(:patch).with(handle, put_value_lines).and_return true
+    allow(handle_service).to receive(:remove).with(handle, indices).and_return true
   end
 
   describe "#initialize" do
@@ -213,7 +213,7 @@ describe HandleRest::Service do
 
     # raise RuntimeError if write 'handle' fails, otherwise
     context "when write handle fails" do
-      before { allow(handle_service).to receive(:put).with(handle, put_value_lines).and_raise RuntimeError }
+      before { allow(handle_service).to receive(:patch).with(handle, put_value_lines).and_raise RuntimeError }
 
       it { expect { service_write }.to raise_exception RuntimeError }
     end
@@ -268,7 +268,7 @@ describe HandleRest::Service do
 
     # raise RuntimeError if remove value lines of 'handle' at 'indices' fails, otherwise
     context "when delete handle indicies fails" do
-      before { allow(handle_service).to receive(:delete).with(handle, indices).and_raise RuntimeError }
+      before { allow(handle_service).to receive(:remove).with(handle, indices).and_raise RuntimeError }
 
       it { expect { service_remove }.to raise_exception RuntimeError }
     end
