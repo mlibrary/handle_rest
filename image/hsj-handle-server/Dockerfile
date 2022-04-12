@@ -13,8 +13,9 @@ RUN wget http://www.handle.net/hnr-source/hsj-8.1.4.tar.gz -O hsj.tar.gz \
       mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar \
   && rm mysql-connector-java-5.1.44.tar.gz
 
-# Install Vim
+# Install MySQL Client and Vim
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+  mysql-client \
   vim-tiny
 
 WORKDIR /hsj

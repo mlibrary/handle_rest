@@ -7,8 +7,9 @@ ARG GID=1000
 
 LABEL maintainer="dla-staff@umich.edu"
 
-# Install Vim
+# Install MySQL (mariadb)./ Client and Vim
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+  mariadb-client \
   vim-tiny
 
 RUN gem install bundler:${BUNDLER_VERSION}

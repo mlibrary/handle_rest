@@ -8,15 +8,12 @@ on:
   workflow_dispatch:
 
 env:
-  MARIADB_ROOT_PASSWORD: password
   MARIADB_USER: ihs
   MARIADB_PASSWORD: password
-  MARIADB_ROOT_HOST: localhost
-  MARIADB_MYSQL_LOCALHOST_USER: non_empty_value
   MARIADB_DATABASE: ihs
   INDEPENDENT_HANDLE_SERVER_PREFIX: IHS
   INTEGRATION: "1"
-  HS_REST_URL: https://0.0.0.0:8000/api/handles
+  HS_REST_URL: https://localhost:8000/api/handles
   HS_PREFIX: IHS
   HS_USER: 300:IHS/IHS
   HS_PASSWORD: password
@@ -33,11 +30,9 @@ jobs:
       ihs:
         image: ghcr.io/mlibrary/handle_rest/ihs-handle-server:latest
         env:
-          MARIADB_ROOT_PASSWORD: password
+          MARIADB_HOST: mysql
           MARIADB_USER: ihs
           MARIADB_PASSWORD: password
-          MARIADB_ROOT_HOST: localhost
-          MARIADB_MYSQL_LOCALHOST_USER: non_empty_value
           MARIADB_DATABASE: ihs
           INDEPENDENT_HANDLE_SERVER_PREFIX: IHS
         ports:
@@ -45,7 +40,7 @@ jobs:
           - 2641:2641/udp
           - 8000:8000/tcp
       mysql:
-        image: ghcr.io/mlibrary/handle_rest/ihs-mysql-server:latest
+        image: mariadb:latest
         env:
           MARIADB_ROOT_PASSWORD: password
           MARIADB_USER: ihs
@@ -53,7 +48,6 @@ jobs:
           MARIADB_ROOT_HOST: localhost
           MARIADB_MYSQL_LOCALHOST_USER: non_empty_value
           MARIADB_DATABASE: ihs
-          INDEPENDENT_HANDLE_SERVER_PREFIX: IHS
         ports:
           - 3306:3306/tcp
 
@@ -67,12 +61,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: Verify MariaDB connection
-        run: |
-          while ! mysqladmin ping --user=${MARIADB_USER} --password=${MARIADB_PASSWORD} --host=0.0.0.0; do
-            sleep 1
-          done
       - name: Wait For HTTP Service
-        run: ./bin/wait-for-http-service.sh http://ihs:8000
+        run: ./bin/wait-for-http-service.sh http://localhost:8000
       - name: Run CI - lint { standard, rubocop } and tests { spec }
         run: bundle exec rake

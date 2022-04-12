@@ -42,6 +42,8 @@ RUN echo "*" > local_nas
 
 WORKDIR /hsj
 
+COPY ./config/create_tables.sql .
+COPY ./config/insert_into.sql .
 COPY ihs-server.sh .
 
 ENTRYPOINT ["./ihs-server.sh"]

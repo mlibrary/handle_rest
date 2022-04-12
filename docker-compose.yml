@@ -1,7 +1,7 @@
 ---
 services:
   mysql:
-    image: ghcr.io/gkostin1966/ihs-mysql-server:latest
+    image: ghcr.io/gkostin1966/mysql:latest
     container_name: mysql-db
     environment:
       - MARIADB_ROOT_PASSWORD=password
@@ -18,11 +18,9 @@ services:
     container_name: ihs-srv
     restart: always
     environment:
-      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_HOST=mysql
       - MARIADB_USER=ihs
       - MARIADB_PASSWORD=password
-      - MARIADB_ROOT_HOST=localhost
-      - MARIADB_MYSQL_LOCALHOST_USER=non_empty_value
       - MARIADB_DATABASE=ihs
       - INDEPENDENT_HANDLE_SERVER_PREFIX=IHS
     ports:
@@ -33,11 +31,9 @@ services:
     image: ghcr.io/gkostin1966/handle_rest:latest
     container_name: spec-cmd
     environment:
-      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_HOST=mysql
       - MARIADB_USER=ihs
       - MARIADB_PASSWORD=password
-      - MARIADB_ROOT_HOST=localhost
-      - MARIADB_MYSQL_LOCALHOST_USER=non_empty_value
       - MARIADB_DATABASE=ihs
       - INDEPENDENT_HANDLE_SERVER_PREFIX=IHS
       - INTEGRATION=1
