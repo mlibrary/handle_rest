@@ -5,11 +5,10 @@ metadata:
     app: $YML_MY_APP
   name: $YML_MY_NAME
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: $YML_MY_APP
-  strategy:
-    type: Recreate
   template:
     metadata:
       annotations:
@@ -21,7 +20,7 @@ spec:
         - name: github-packages-read
       containers:
         - name: $YML_MY_NAME
-          image: ghcr.io/${GITHUB_USER}/$YML_MY_NAME:latest
+          image: ghcr.io/${GITHUB_USER}/mysql:latest
           env:
             - name: MARIADB_ROOT_PASSWORD
               value: ${YML_MY_MARIADB_ROOT_PASSWORD}
@@ -37,10 +36,3 @@ spec:
               value: ${YML_MY_MARIADB_DATABASE}
           ports:
             - containerPort: 3306
-          volumeMounts:
-            - name: $YML_MY_NAME
-              mountPath: /var/lib/mysql
-      volumes:
-        - name: $YML_MY_NAME
-          persistentVolumeClaim:
-            claimName: $YML_MY_NAME

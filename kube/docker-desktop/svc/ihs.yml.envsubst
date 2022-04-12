@@ -8,19 +8,15 @@ spec:
   clusterIP: None
   ports:
     - name: tcp-2641
-#      nodePort: 31001
       protocol: TCP
       port: 2641
     - name: udp-2641
-#      nodePort: 31001
       protocol: UDP
       port: 2641
     - name: tcp-8000
-#      nodePort: 31000
       protocol: TCP
       port: 8000
       targetPort: 8000
   selector:
     app: $YML_MY_APP
-#  type: NodePort
 
