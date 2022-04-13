@@ -16,7 +16,7 @@ env:
   HS_REST_URL: https://localhost:8000/api/handles
   HS_PREFIX: IHS
   HS_USER: 300:IHS/IHS
-  HS_PASSWORD: password
+  HS_SECKEY: password
   HS_SSL_VERIFY: "0"
 
 jobs:

@@ -3,6 +3,7 @@ PATH
   specs:
     handle_rest (0.0.1)
       faraday
+      faraday-retry
 
 GEM
   remote: https://rubygems.org/
@@ -16,6 +17,7 @@ GEM
       faraday-net_http (~> 2.0)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (2.0.1)
+    faraday-retry (1.0.3)
     json (2.6.1)
     method_source (1.0.0)
     parallel (1.21.0)

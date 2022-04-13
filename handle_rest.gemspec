@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/mlibrary/handle_rest"
   s.license = "APACHE2"
   s.add_dependency "faraday"
+  s.add_dependency "faraday-retry"
   s.required_ruby_version = ">= 2.1"
 
   s.add_development_dependency "bundler"

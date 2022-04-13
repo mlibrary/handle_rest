@@ -28,21 +28,34 @@ Or install it yourself as:
 ```ruby
 require 'handle_rest'
 
-# Set up the connection
-service = HandleService.new(url: 'https://hdl.example.com:8000/api/handles',
-                            user: '300:0.NA/admin.handle', 
-                            password: 'secret')
+# Set up the handle service connection
+handle_service = HandleService.new(url: 'https://hdl.example.com:8000/api/handles',
+                                   user: '300:0.NA/PREFIX', 
+                                   password: 'secret')
 
-# Create a simple URL handle
-handle = Handle.new('9999/myhandle', url: 'http://example.com/')
-service.create(handle)
+# Set up the service to add the admin value line to all new handles
+admin = Identity.from_s('300:0.NA/PREFIX')
+admin_value = AdminValue.new(admin.index, AdminPermissionSet.new, admin.handle)
+admin_value_line = ValueLine.new(100, admin_value)
+service = Service.new([admin_value_line], handle_service)
 
-# Get a handle
-handle = service.get('9999/myhandle')
-puts handle.url
+# Set up the URL service to store the URL at index 1
+url_service = UrlService.new(1, service)
 
-# Delete a handle
-service.delete('9999/myhandle')
+# Create a handle with a URL
+url_service.set('PREFIX/Suffix', 'http://example.com')
+
+# Retrieve the URL from the handle
+puts url_service.get('PREFIX/Suffix')
+
+# Update the URL of the handle
+url_service.set('PREFIX/Suffix', 'https://www.example.com')
+
+# Retrieve the new URL from the handle
+puts url_service.get('PREFIX/Suffix')
+
+# Delete the handle
+service.delete(Handle.from_s('PREFIX/Suffix'))
 ```
 
 ## Running the integration tests

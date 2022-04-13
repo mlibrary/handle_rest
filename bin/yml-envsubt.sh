@@ -40,4 +40,4 @@ echo "mariadb database: $YML_MY_MARIADB_DATABASE"
 #export YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX=IHS
 echo "IHS prefex: $YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX"
 
-#envsubst < $1.envsubst > $1
+envsubst < $1.envsubst > $1

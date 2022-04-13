@@ -1,4 +1,5 @@
 require "faraday"
+require "faraday/retry"
 
 module HandleRest
   # Handle Service
@@ -22,10 +23,9 @@ module HandleRest
         ssl: {verify: ssl_verify}) do |faraday|
         faraday.request :authorization, :basic, CGI.escape(user), password
         faraday.request :json # encode req bodies as JSON and automatically set the Content-Type header
-        # faraday.request :retry # retry transient failures
+        faraday.request :retry # retry transient failures
         faraday.response :json # decode response bodies as JSON
-        # faraday.adapter :net_http # adds the adapter to the connection, defaults to `Faraday.default_adapter`
-        # faraday.adapter Faraday.default_adapter
+        faraday.adapter :net_http # adds the adapter to the connection, defaults to `Faraday.default_adapter`
       end
     end
 

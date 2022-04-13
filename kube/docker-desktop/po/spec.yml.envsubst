@@ -27,7 +27,7 @@ spec:
           value: ${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
         - name: HS_USER
           value: 300:${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}/${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
-        - name: HS_PASSWORD
+        - name: HS_SECKEY
           value: ${YML_MY_MARIADB_PASSWORD}
         - name: HS_SSL_VERIFY
           value: "0"

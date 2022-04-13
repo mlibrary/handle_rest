@@ -12,3 +12,4 @@ doc
 /image/ihs/Dockerfile
 
 /kube/docker-desktop/**/*.yml
+docker-compose.yml

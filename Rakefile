@@ -1,4 +1,4 @@
-require 'dotenv/tasks'
+require "dotenv/tasks"
 require "rubocop/rake_task"
 require "rspec/core/rake_task"
 
