@@ -102,6 +102,56 @@ can use whatever you want so long as it's consistent.
   * index 300, type `HS_SECKEY`, data type string, set to the password you want to use for the administrative user (warning: this is stored in plain text in the database)
 * Start the handle server: `hdl-server $HS_HOME`
 
+### Containers
+
+#### docker-compose
+
+You may also run the integration tests using docker-compose. To generate the docker-compose.yml file using the environment variables defined in the .env file run the yml-envsubst.sh shell script in the bin directory.
+```bash
+./bin/yml-envsubst.sh docker-compose.yml
+```
+The docker-compose.yml file will pull images from the ${GITHUB_USER} account but first you'll need to create them using the build-image.sh and push-image.sh shell scripts in the bin directory.
+```bash
+./bin/build-image.sh ./image/mysql
+./bin/push-image.sh ./image/mysql
+./bin/build-image.sh ./image/ihs-handle-server
+./bin/push-image.sh ./image/ihs-handle-server
+./bin/build-image.sh .
+./bin/push-image.sh .
+```
+The push-image.sh shell script will use the ${GITHUB_WRITE_PACKAGES_TOKEN} from the shell environment which must have write packages permission for the ${GITHUB_USER}. To run the tests use docker-compose up.
+```bash
+docker-compose up
+```
+When the test finish you'll have to `ctrl-c` to interrupt and stop the services and then run docker-compose down to tidy things up.
+```bash
+docker-compose down --remove-orphans
+```
+#### docker kubernetes
+You may also run the integration tests in your Docker Desktop Kubernetes cluster. You'll have to generate the kubernetes manifest using the yml-envsubst.sh shell script in the bin directory against the *.yml.envsubst files in the kube/docker-desktop directory.  For example:
+```bash
+./bin/yml-envsubst.sh ./kube/docker-desktop/po/spec.yml
+```
+
+Note: ./kube/docker-desktop/secret/github-packages-read.yml manifest uses ${GITHUB_PACKAGES_READ} environment variable which is generated from the
+```bash
+export GITHUB_PACKAGES_READ=`echo "${GITHUB_USER}:${GITHUB_READ_PACKAGES_TOKEN}" | base64`
+````
+inside the yml-envsubst.sh shell script. The ${GITHUB_READ_PACKAGES_TOKEN} must have read packages permission for the ${GITHUB_USER}.
+
+Once you generate all the manifest use `kubectl apply` to populate your desktop cluster, for example:
+```bash
+kubectl apply -f ./kube/docker-desktop/secret/github-packages-read.yml
+```
+You'll need to `kubectl exec` into pod/spec to manually run the specs.
+```bash
+kubectl exec -it pod/spec -- bash
+```
+then
+```bash
+bundle exec rake
+```
+Not the prettiest implementation of containers but all you need is docker, kubectl and bash which is something.
 
 ## Contributing
 
