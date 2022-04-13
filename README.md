@@ -1,7 +1,7 @@
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 ![CI](https://github.com/mlibrary/handle_rest/actions/workflows/ci.yml/badge.svg)
 
-# Handle 
+# Handle Rest
 
 Ruby interface to the [CNRI Handle System](http://handle.net/) REST API.  The
 CNRI Handle Server provides a DNS-like method of providing persistent URLs to

@@ -1,0 +1,45 @@
+---
+services:
+  mysql:
+    image: ghcr.io/${GITHUB_USER}/mysql:latest
+    container_name: mysql-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=${YML_MY_MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${YML_MY_MARIADB_USER}
+      - MARIADB_PASSWORD=${YML_MY_MARIADB_PASSWORD}
+      - MARIADB_ROOT_HOST=localhost
+      - MARIADB_MYSQL_LOCALHOST_USER=non_empty_value
+      - MARIADB_DATABASE=${YML_MY_MARIADB_DATABASE}
+      - INDEPENDENT_HANDLE_SERVER_PREFIX=${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+    ports:
+      - 3306:3306/tcp
+  ihs:
+    image: ghcr.io/${GITHUB_USER}/ihs-handle-server:latest
+    container_name: ihs-srv
+    restart: always
+    environment:
+      - MARIADB_HOST=mysql
+      - MARIADB_USER=${YML_MY_MARIADB_USER}
+      - MARIADB_PASSWORD=${YML_MY_MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${YML_MY_MARIADB_DATABASE}
+      - INDEPENDENT_HANDLE_SERVER_PREFIX=${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+    ports:
+      - 2641:2641/tcp
+      - 2641:2641/udp
+      - 8000:8000/tcp
+  spec:
+    image: ghcr.io/${GITHUB_USER}/handle_rest:latest
+    container_name: spec-cmd
+    environment:
+      - MARIADB_HOST=mysql
+      - MARIADB_USER=${YML_MY_MARIADB_USER}
+      - MARIADB_PASSWORD=${YML_MY_MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${YML_MY_MARIADB_DATABASE}
+      - INDEPENDENT_HANDLE_SERVER_PREFIX=${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+      - INTEGRATION=1
+      - HS_REST_URL=https://ihs:8000/api/handles
+      - HS_PREFIX=${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+      - HS_USER=300:${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}/${YML_MY_INDEPENDENT_HANDLE_SERVER_PREFIX}
+      - HS_PASSWORD=${YML_MY_MARIADB_PASSWORD}
+      - HS_SSL_VERIFY=0
+    command: ["./bin/wait-for-http-service.sh", "http://ihs:8000", "bundle", "exec", "rspec"]
