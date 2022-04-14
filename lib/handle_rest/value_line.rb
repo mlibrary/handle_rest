@@ -44,10 +44,10 @@ module HandleRest
     def permissions=(ps)
       if ps.nil?
         ps = case @value.type
-             when "HS_PUBKEY", "HS_SECKEY"
-               PermissionSet.from_s("1100")
-             else
-               PermissionSet.from_s("1110")
+        when "HS_PUBKEY", "HS_SECKEY"
+          PermissionSet.from_s("1100")
+        else
+          PermissionSet.from_s("1110")
         end
       end
       raise "permission set must be a kind of HandleRest::PermissionSet" unless ps.is_a?(HandleRest::PermissionSet)
