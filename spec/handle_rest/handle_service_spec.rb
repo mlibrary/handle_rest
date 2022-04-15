@@ -63,10 +63,19 @@ describe HandleRest::HandleService do
 
     context "when response error" do
       let(:success) { false }
-      let(:response_body) { {"handle" => handle.to_s, "responseCode" => 2} }
+      let(:response_body) { {"handle" => handle.to_s, "responseCode" => code} }
+      let(:code) { 2 }
 
       it "raise exception" do
         expect { handle_service.get(handle) }.to raise_exception(RuntimeError, "PREFIX/HANDLE - 2: Error")
+      end
+
+      context "when handle not found error" do
+        let(:code) { 100 }
+
+        it "returns and empty array" do
+          expect(handle_service.get(handle)).to be_empty
+        end
       end
     end
   end

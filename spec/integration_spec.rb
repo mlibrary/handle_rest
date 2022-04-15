@@ -218,7 +218,7 @@ describe "INTEGRATION", if: ENV["INTEGRATION"] == "1" do
           it "delete the handle" do # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength
             if admin_ps.read_values && admin_ps.remove_values
               admin_hs.delete(handle)
-              expect { admin_hs.get(handle) }.to raise_exception(RuntimeError, "#{handle} - 100: Handle Not Found")
+              expect(admin_hs.get(handle)).to be_empty
             else
               expect { admin_hs.delete(handle) }.to raise_exception(RuntimeError, "#{handle} - 400: Invalid Admin")
             end

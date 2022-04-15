@@ -69,7 +69,12 @@ module HandleRest
       if response.success?
         response.body["values"].map { |v| HandleRest::ValueLine.from_h(v) }
       else
-        raise_response_error(response)
+        case response_code(response)
+        when 100
+          []
+        else
+          raise_response_error(response)
+        end
       end
     end
 
@@ -140,6 +145,14 @@ module HandleRest
     def raise_response_error(response)
       error = response.body
       raise "#{error["handle"]} - #{error["responseCode"]}: #{response_code_message(error["responseCode"])}"
+    end
+
+    # Response Code
+    #
+    # @param response [Faraday::Response]
+    # @return [Integer] code
+    def response_code(response)
+      response.body["responseCode"]&.to_i || 0
     end
 
     # Response Code Message Map
