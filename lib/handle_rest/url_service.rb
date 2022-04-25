@@ -22,14 +22,14 @@ module HandleRest
 
     # Get a Handle's URL
     #
-    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #   raise RuntimeError if 'handle' is invalid, prefix/suffix, otherwise
     #     return nil if 'handle' does NOT exist, otherwise
     #       return nil if value line at 'index' does NOT exist, otherwise
     #         raise RuntimeError if value line at 'index' is NOT an 'URL', otherwise
     #           raise RuntimeError if get of 'url' value line at 'index' fails, otherwise
     #             return 'url' of 'index' value line.
     #
-    # @param handle [String] index:prefix/suffix
+    # @param handle [String] prefix/suffix
     # @return [String] url or nil
     # @raise [RuntimeError]
     def get(handle)
@@ -43,13 +43,13 @@ module HandleRest
 
     # Set a Handle's URL
     #
-    #   raise RuntimeError if 'handle' is invalid, index:prefix/suffix, otherwise
+    #   raise RuntimeError if 'handle' is invalid, prefix/suffix, otherwise
     #     raise RuntimeError if 'url' is invalid, scheme/protocol://host name[:port number] [/path][/query_string][/#fragment], otherwise
     #       raise RuntimeError if value line at 'index' exist and is NOT an 'URL', otherwise
     #         raise RuntimeError if set of 'url' value line at 'index' fails, otherwise
     #           return 'url' of 'index' value line
     #
-    # @param handle [String] index:prefix/suffix
+    # @param handle [String] prefix/suffix
     # @param new_url [String] scheme/protocol://host name[:port number] [/path][/query_string][/#fragment]
     # @return [String] url
     # @raise [RuntimeError]
@@ -64,12 +64,12 @@ module HandleRest
       raise "Value type '#{index_value.type}' at index '#{index_value.index}' is NOT an 'URL' type." unless index_value.nil? || index_value.type == "URL"
       old_url = index_value&.value
       index_value = nil
-      value_lines = @service.write(hdl, url)
+      value_lines = @service.write(hdl, [ValueLine.new(@index, url)])
       index_value_lines = value_lines.select { |value_line| value_line.index == @index }
       index_value = index_value_lines[0].value unless index_value_lines.empty?
       raise "Failed to add url '#{new_url}' to '#{handle}' at index '#{@index}'." if old_url.nil? && index_value.nil?
       raise "Failure deleted url '#{old_url}' from '#{handle}' at index '#{@index}'!!!" if !old_url.nil? && index_value.nil?
-      raise "Failed to replace url '#{old_url}' with '#{new_url}' for '#{handle}' at index '#{@index}'." if old_url == index_value.value
+      raise "Failed to replace url '#{old_url}' with '#{new_url}' for '#{handle}' at index '#{@index}'." if old_url != new_url && old_url == index_value.value
       raise "Failure corrupted url '#{old_url}' with '#{index_value.value}' for '#{handle}' at index '#{@index}'!!!" if old_url != index_value.value && new_url != index_value.value
       index_value.value
     end

@@ -23,7 +23,7 @@ describe HandleRest::UrlService do
   before do
     allow(service).to receive(:is_a?).with(HandleRest::Service).and_return true
     allow(service).to receive(:read).with(HandleRest::Handle.from_s(handle)).and_return value_lines
-    allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_return new_value_lines
+    allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), [HandleRest::ValueLine.new(service_index, HandleRest::UrlValue.from_s(new_url))]).and_return new_value_lines
   end
 
   describe "#initialize" do
@@ -184,7 +184,7 @@ describe HandleRest::UrlService do
       end
 
       context "when service write fails" do
-        before { allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), HandleRest::UrlValue.from_s(new_url)).and_raise RuntimeError }
+        before { allow(service).to receive(:write).with(HandleRest::Handle.from_s(handle), [HandleRest::ValueLine.new(service_index, HandleRest::UrlValue.from_s(new_url))]).and_raise RuntimeError }
 
         it { expect { url_service_set }.to raise_exception RuntimeError }
       end
