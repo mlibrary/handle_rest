@@ -2,6 +2,7 @@
 set -e
 sed -i "s/USER/${MARIADB_USER}/g" /ihs/config.dct
 sed -i "s/PASSWORD/${MARIADB_PASSWORD}/g" /ihs/config.dct
+sed -i "s/HOST/${MARIADB_HOST}/g" /ihs/config.dct
 sed -i "s/PREFIX/${INDEPENDENT_HANDLE_SERVER_PREFIX}/g" /ihs/config.dct
 cat /ihs/config.dct
 while ! mysql --user=${MARIADB_USER} --password=${MARIADB_PASSWORD} --host=${MARIADB_HOST}; do

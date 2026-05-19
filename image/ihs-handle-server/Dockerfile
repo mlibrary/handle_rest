@@ -1,22 +1,18 @@
-FROM openjdk:8u141-jdk
+FROM eclipse-temurin:8-jdk
 
-RUN apt-get update && apt-get install -y --no-install-recommends wget \
-	&& rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  wget \
+  default-mysql-client \
+  vim-tiny \
+  && rm -rf /var/lib/apt/lists/* \
   && mkdir /hsj
 
 WORKDIR /hsj
 
-RUN wget http://www.handle.net/hnr-source/hsj-8.1.4.tar.gz -O hsj.tar.gz \
+RUN wget https://www.handle.net/hnr-source/hsj-8.1.4.tar.gz -O hsj.tar.gz \
   && tar -xf hsj.tar.gz --strip-components=1 \
-  && wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.44.tar.gz \
-  && tar -xf mysql-connector-java-5.1.44.tar.gz -C lib --strip-components=1 \
-      mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar \
-  && rm mysql-connector-java-5.1.44.tar.gz
-
-# Install MySQL Client and Vim
-RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
-  mysql-client \
-  vim-tiny
+  && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.44/mysql-connector-java-5.1.44.jar \
+      -O lib/mysql-connector-java-5.1.44-bin.jar
 
 WORKDIR /hsj
 

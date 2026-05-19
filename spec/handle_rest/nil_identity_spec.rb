@@ -7,7 +7,7 @@ describe HandleRest::NilIdentity do
   let(:handle) { HandleRest::Handle.from_s("PREFIX/ADMIN") }
 
   it "has a private new method" do
-    expect { described_class.new(index, handle) }.to raise_exception(NoMethodError, "private method `new' called for HandleRest::NilIdentity:Class")
+    expect { described_class.new(index, handle) }.to raise_exception(NoMethodError, "private method `new' called for class HandleRest::NilIdentity")
   end
 
   it "is derived from Identity" do

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "handle_rest"
-  s.version = "0.0.4"
+  s.version = "0.0.6"
   s.summary = "Ruby interface to CNRI Handle REST API"
 
   s.description = %( Ruby interface to the CNRI Handle REST API.
@@ -15,9 +15,9 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/mlibrary/handle_rest"
   s.license = "APACHE2"
 
-  s.add_dependency "faraday", "~> 1.0"
-  s.add_dependency "faraday_middleware", "~> 1.0"
-  s.required_ruby_version = ">= 2.6"
+  s.add_dependency "faraday", ">= 0.9", "< 3", "!= 2.0.0"
+  s.add_dependency "faraday-retry", ">= 2.0", "< 3"
+  s.required_ruby_version = ">= 3.3"
 
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"

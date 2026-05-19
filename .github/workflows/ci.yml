@@ -21,47 +21,52 @@ env:
 
 jobs:
   ci:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['2.6', '2.7', '3.0']
-
-    services:
-      ihs:
-        image: ghcr.io/mlibrary/handle_rest/ihs-handle-server:latest
-        env:
-          MARIADB_HOST: mysql
-          MARIADB_USER: ihs
-          MARIADB_PASSWORD: password
-          MARIADB_DATABASE: ihs
-          INDEPENDENT_HANDLE_SERVER_PREFIX: IHS
-        ports:
-          - 2641:2641/tcp
-          - 2641:2641/udp
-          - 8000:8000/tcp
-      mysql:
-        image: mariadb:latest
-        env:
-          MARIADB_ROOT_PASSWORD: password
-          MARIADB_USER: ihs
-          MARIADB_PASSWORD: password
-          MARIADB_ROOT_HOST: localhost
-          MARIADB_MYSQL_LOCALHOST_USER: non_empty_value
-          MARIADB_DATABASE: ihs
-        ports:
-          - 3306:3306/tcp
+        ruby-version: ['3.3']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Ruby
-        # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
-        # change this to (see https://github.com/ruby/setup-ruby#versioning):
-        # uses: ruby/setup-ruby@v1
-        uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Build IHS Handle Server image
+        run: docker build -t ihs-handle-server:ci ./image/ihs-handle-server
+      - name: Start MariaDB
+        run: |
+          docker network create ci-net
+          docker run -d --name ci-mysql --network ci-net \
+            -e MARIADB_ROOT_PASSWORD=${MARIADB_PASSWORD} \
+            -e MARIADB_USER=${MARIADB_USER} \
+            -e MARIADB_PASSWORD=${MARIADB_PASSWORD} \
+            -e MARIADB_DATABASE=${MARIADB_DATABASE} \
+            -e MARIADB_ROOT_HOST=localhost \
+            -e MARIADB_MYSQL_LOCALHOST_USER=non_empty_value \
+            mariadb:10.11
+      - name: Start IHS Handle Server
+        run: |
+          docker run -d --name ihs-server --network ci-net -p 8000:8000 \
+            -e MARIADB_HOST=ci-mysql \
+            -e MARIADB_USER=${MARIADB_USER} \
+            -e MARIADB_PASSWORD=${MARIADB_PASSWORD} \
+            -e MARIADB_DATABASE=${MARIADB_DATABASE} \
+            -e INDEPENDENT_HANDLE_SERVER_PREFIX=${INDEPENDENT_HANDLE_SERVER_PREFIX} \
+            ihs-handle-server:ci
       - name: Wait For HTTP Service
-        run: ./bin/wait-for-http-service.sh http://localhost:8000
+        run: WAIT_FOR_HTTP_TIMEOUT=180 ./bin/wait-for-http-service.sh http://localhost:8000
+      - name: Show IHS logs on failure
+        if: failure()
+        run: |
+          docker logs ihs-server || true
+          docker logs ci-mysql || true
       - name: Run CI - lint { standard, rubocop } and tests { spec }
         run: bundle exec rake
+      - name: Cleanup containers
+        if: always()
+        run: |
+          docker rm -f ihs-server ci-mysql || true
+          docker network rm ci-net || true

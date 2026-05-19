@@ -34,7 +34,7 @@
   "server_config" = {
     "storage_type" = "sql"
     "sql_settings" = {
-      "sql_url" = "jdbc:mysql://mysql/ihs?user=USER&password=PASSWORD"
+      "sql_url" = "jdbc:mysql://HOST/ihs?user=USER&password=PASSWORD"
       "sql_driver" = "com.mysql.jdbc.Driver"
       "sql_login" = "USER"
       "sql_password" = "PASSWORD"

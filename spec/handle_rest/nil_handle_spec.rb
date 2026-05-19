@@ -5,7 +5,7 @@ describe HandleRest::NilHandle do
   let(:str) { "PREFIX/SUFFIX" }
 
   it "has a private new method" do
-    expect { described_class.new("Prefix", "Suffix") }.to raise_exception(NoMethodError, "private method `new' called for HandleRest::NilHandle:Class")
+    expect { described_class.new("Prefix", "Suffix") }.to raise_exception(NoMethodError, "private method `new' called for class HandleRest::NilHandle")
   end
 
   it "is derived from Handle" do

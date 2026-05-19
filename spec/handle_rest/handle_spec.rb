@@ -2,7 +2,7 @@ require "handle_rest"
 
 describe HandleRest::Handle do
   it "has a private new method" do
-    expect { described_class.new("Prefix", "Suffix") }.to raise_exception(NoMethodError, "private method `new' called for HandleRest::Handle:Class")
+    expect { described_class.new("Prefix", "Suffix") }.to raise_exception(NoMethodError, "private method `new' called for class HandleRest::Handle")
   end
 
   it "forces upcase" do

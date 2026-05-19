@@ -2,22 +2,30 @@ name: package-hsj-handle-server
 
 on: workflow_dispatch
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Package
-        uses: craftech-io/package-action@v3.1.0
-        id: url-GPR
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
           context: ./image/hsj-handle-server
           dockerfile: ./image/hsj-handle-server/Dockerfile
-          image_name: hsj-handle-server
+          push: true
           tags: |
-            latest
-#            ${{ github.sha }}
-      - name: imageURL
-        run: echo ${{ steps.url-GPR.outputs.imageURL }}
+            ghcr.io/${{ github.repository_owner }}/hsj-handle-server:latest
+            ghcr.io/${{ github.repository_owner }}/hsj-handle-server:${{ github.sha }}

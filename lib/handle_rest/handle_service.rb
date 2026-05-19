@@ -1,5 +1,5 @@
 require "faraday"
-require "faraday_middleware"
+require "faraday/retry"
 
 module HandleRest
   # Handle Service
@@ -21,9 +21,12 @@ module HandleRest
     def initialize(url:, user:, password:, ssl_verify: true)
       @conn = Faraday.new(url: url,
         ssl: {verify: ssl_verify}) do |faraday|
-        faraday.request :basic_auth, CGI.escape(user), password
+        faraday.request :authorization, :basic, CGI.escape(user), password
         faraday.request :json # encode req bodies as JSON and automatically set the Content-Type header
-        faraday.request :retry # retry transient failures
+        faraday.request :retry,
+          max: 3,
+          interval: 0.1,
+          exceptions: [Faraday::TimeoutError, Faraday::ConnectionFailed]
         faraday.response :json # decode response bodies as JSON
         faraday.adapter :net_http # adds the adapter to the connection, defaults to `Faraday.default_adapter`
       end
